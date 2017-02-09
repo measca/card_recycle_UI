@@ -8,8 +8,18 @@
                 <div class="col-xs-5">
                     <input type="text" class="form-control" maxlength="20" r-model="name">
                 </div>
+                <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.name.isPass}>{$validation.name.msg}</div>
                 <div class="clear"></div>
             </div>
+            <!--<div class="form-group">
+                <div class="col-xs-3 text-right">
+                    <label class="control-label pt5 pr10">充值卡类型LOGO：</label>
+                </div>
+                <div class="col-xs-10 col-xs-offset-1">
+                    <file accept="image" />
+                </div>
+                <div class="clear"></div>
+            </div>-->
             <div class="form-group">
                 <div class="col-xs-3 text-right">
                     <label class="control-label pt5 pr10">充值卡类型代码：</label>
@@ -17,19 +27,7 @@
                 <div class="col-xs-5">
                     <input type="text" class="form-control" maxlength="20" r-model="state">
                 </div>
-                <div class="clear"></div>
-            </div>
-            <div class="form-group">
-                <div class="col-xs-3 text-right">
-                    <label class="control-label pt5 pr10">支持面值：</label>
-                </div>
-                <div class="col-xs-5">
-                    <input type="text" class="form-control" maxlength="50" r-model="money">
-                </div>
-                <div class="col-xs-4">
-                    <div class="pt5 pl10 text-muted">金额用空格隔开，如：10 20</div>
-                </div>
-                <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.money.isPass}>{$validation.money.msg}</div>
+                <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.state.isPass}>{$validation.state.msg}</div>
                 <div class="clear"></div>
             </div>
             <div class="form-group">
@@ -37,16 +35,17 @@
                     <label class="control-label pt5 pr10">寄售比例：</label>
                 </div>
                 <div class="col-xs-5">
-                    <input type="text" class="form-control" maxlength="20">
+                    <input type="text" class="form-control" maxlength="6" r-model="bl">
                 </div>
                 <div class="col-xs-4">
                     <div class="pt5 pl10 text-muted">不需要写“%”符号</div>
                 </div>
+                <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.bl.isPass}>{$validation.bl.msg}</div>
                 <div class="clear"></div>
             </div>
             <div class="form-group">
                 <div class="col-xs-5 col-xs-offset-3">
-                    <input type="submit" class="btn btn-primary btn-block" value="提交" on-click={this.hidden()}>
+                    <input type="submit" class="btn btn-primary btn-block" value="提交" on-click={this.addData()} {#if !$validation.$isPass}disabled{/if}>
                 </div>
                 <div class="clear"></div>
             </div>
@@ -54,21 +53,42 @@
     </modal>
 </template>
 <script>
+    import {add} from "../../../../service/cardService.js";
+    import gritter from "../../../../tool/gritter/gritter.js";
+    
     export default {
         data: {
             name: "",
             state: "",
-            money: "",
             bl: ""
         },
         components: {
-            modal: require("../../../../control/modal/index.rgl")
+            modal: require("../../../../control/modal/index.rgl"),
+            // file: require("../../../../control/upload/file.rgl")
         },
         show(){
             this.$refs.modal.show();
         },
         hidden() {
             this.$refs.modal.hidden();
+        },
+        addData() {
+            var self = this;
+            add({
+                name: this.data.name,
+                state: this.data.state,
+                bl: (this.data.bl * 0.01).toFixed(3)
+            }, ()=>{
+                self.hidden();
+                self.$update({
+                    name: "",
+                    state: "",
+                    bl: ""
+                });
+                if($.isFunction(self.success)) self.success();
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
         },
         validation: {
             model: {
@@ -79,18 +99,11 @@
                     required: true,
                     alphaDash: true
                 },
-                money: {
-                    required: true,
-                    pattern: "([0-9]|[1-9][0-9]*)([.][0-9]*)?([ ]([0-9]|[1-9][0-9]*)([.][0-9]*)?)*"
-                },
                 bl: {
                     required: true,
-                    decimal: true
-                }
-            },
-            message: {
-                money: {
-                    pattern: "格式不正确"
+                    decimal: true,
+                    eqmax: 0,
+                    eqmin: 100,
                 }
             }
         }

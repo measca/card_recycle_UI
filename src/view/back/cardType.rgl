@@ -5,82 +5,86 @@
                 <a class="btn btn-primary pull-right ml5" on-click={this.showAddModal()}>添加充值卡类型</a>
                 充值卡类型管理
             </h3>
-            <div class="box">
+            <div class="box" r-hide={dataList.length > 0}>
                 <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
             </div>
-            <table class="table trade-records">
+            <table class="table trade-records" r-hide={dataList.length <= 0}>
                 <thead>
                     <tr>
                         <th>充值卡类型名称</th>
                         <th>充值卡类型代码</th>
-                        <th>充值卡类型</th>
-                        <th>支持面值</th>
                         <th>寄售比例</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {#list dataList as data}
                     <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
+                        <td>{data.name}</td>
+                        <td>{data.cardCode}</td>
+                        <td>{data.saleRatio * 100}%</td>
                         <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
+                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal(data)}><i class="fa fa-pencil"></i></a>
+                            <a href="javascript:;" class="btn btn-success-alt btn-xs ml10" r-tooltip="支持的面值管理" on-click={this.showAddMoneyModal(data.id)}>&nbsp;<i class="fa fa-cny"></i>&nbsp;</a>
+                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del(data.id)}><i class="fa fa-times-circle"></i></a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
-                        </td>
-                    </tr>
+                    {/list}
                 </tbody>
             </table>
         </div>
         <addModal ref="addModal"></addModal>
         <edidModal ref="edidModal"></edidModal>
+        <addMoneyModal ref="addMoneyModal"></addMoneyModal>
     </div>
 </template>
 <script>
     import confirm from "../../tool/confirm/index.js";
+    import {getAllAtAdmin, del} from "../../service/cardService.js"
 
     export default {
         data: {
+            dataList: []
+        },
+        init(){
+            this.$update("dataList", []);
+            this.initList();
+            var self = this;
+            this.$refs.addModal.success = this.$refs.edidModal.success = ()=> {
+                self.initList();
+            }
         },
         components: {
             addModal: require("./modal/cardType/add.rgl"),
-            edidModal: require("./modal/cardType/edit.rgl")
+            edidModal: require("./modal/cardType/edit.rgl"),
+            addMoneyModal: require("./modal/cardType/addMoney.rgl")
         },
         showAddModal() {
             this.$refs.addModal.show();
         },
-        showEdidModal() {
-            this.$refs.edidModal.show();
+        showEdidModal(data) {
+            this.$refs.edidModal.show(data);
         },
-        del() {
+        showAddMoneyModal(id) {
+            this.$refs.addMoneyModal.show(id);
+        },
+        del(id) {
+            var self = this;
             confirm.ajax("确定删除？", ()=>{
-                setTimeout(function() {
+                del({id: id}, (msg)=>{
+                    self.initList();
                     confirm.alert("删除成功");
-                }, 3000);
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        initList() {
+            var self = this;
+            getAllAtAdmin((list)=>{
+                self.$update({
+                   dataList: list
+                });
             });
         }
     }

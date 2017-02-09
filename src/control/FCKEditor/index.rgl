@@ -14,35 +14,35 @@
   import "../../lib/wangEditor/css/wangEditor.css";
 
   module.exports = {
-    events: {
-      $init() {
-        var self = this;
-        require(["../../lib/wangEditor/js/wangEditor.js"], (WangEditor) => {
-          var editor = self.data.__editor = new WangEditor(self.$refs.text);
-          editor.create();
-          if(self.data.value) editor.$txt.html(self.data.value)
-          self.data.value = editor.$txt.html();
-          editor.onchange = function () {
-            self.$update({
-              value: this.$txt.html(),
-              text: this.$txt.text()
-            });
-          };
-
-          self.$watch("value", (newVal)=>{
-            if(newVal != this.data.__editor.$txt.html()) {
-              this.data.__editor.$txt.html(newVal)
-            }
+    init() {
+      var self = this;
+      require(["../../lib/wangEditor/js/wangEditor.js"], (WangEditor) => {
+        var editor = self.data.__editor = new WangEditor(self.$refs.text);
+        editor.create();
+        if(self.data.value) editor.$txt.html(self.data.value)
+        self.data.value = editor.$txt.html();
+        editor.onchange = function () {
+          self.$update({
+            value: this.$txt.html(),
+            text: this.$txt.text()
           });
+        };
+
+        self.$watch("value", (newVal)=>{
+          if(newVal != this.data.__editor.$txt.html()) {
+            this.data.__editor.$txt.html(newVal)
+          }
         });
-      },
+      });
+    },
+    events: {
       $destory () {
         this.data.__editor.destroy();
       }
     },
     data: {
       // ----------公共属性
-      height: "300px",
+      height: "500px",
       value: "",
       text: "",
       // ----------私有属性

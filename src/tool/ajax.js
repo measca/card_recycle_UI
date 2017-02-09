@@ -27,6 +27,9 @@ function send (option, ajax, resolve) {
     type: option.type,
     url: option.url,
     global: false,
+    xhrFields: {
+        withCredentials: true
+    },
     error: function (xhr, textStatus, errorThrown) {
       resolve({
         isPass: false,
@@ -66,7 +69,7 @@ function Ajax (baseAjaxAction, shareData) {
     async: true, // (默认: true) 默认设置下，所有请求均为异步请求。如果需要发送同步请求，请将此选项设置为 false。注意，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
     cache: false, // (默认: false) 设置为 false 将不缓存此数据。
     contentType: 'application/x-www-form-urlencoded', // 默认值适合大多数情况。
-    crossDomain: false, // 默认： 同域请求为false  跨域请求为true如果你想强制跨域请求（如JSONP形式）同一域，设置crossDomain为true。这使得例如，服务器端重定向到另一个域
+    crossDomain: true, // 默认： 同域请求为false  跨域请求为true如果你想强制跨域请求（如JSONP形式）同一域，设置crossDomain为true。这使得例如，服务器端重定向到另一个域
     data: null, // 发送到服务器的数据。将自动转换为请求字符串格式。
     type: 'GET', // (默认: "GET") 请求方式 ("POST" 或 "GET")， 默认为 "GET"。注意：其它 HTTP 请求方法，如 PUT 和 DELETE 也可以使用
     dataType: 'text', // 预期服务器返回的数据类型。
@@ -79,7 +82,7 @@ function Ajax (baseAjaxAction, shareData) {
         "text": 返回纯文本字符串*/
     headers: {}, // 一个额外的"{键:值}"对映射到请求一起发送。此设置被设置之前beforeSend函数被调用;因此，消息头中的值设置可以在覆盖beforeSend函数范围内的任何设置。
     processData: true, // (默认: true) 默认情况下，通过data选项传递进来的数据，如果是一个对象(技术上讲只要不是字符串)，都会处理转化成一个查询字符串，以配合默认内容类型 "application/x-www-form-urlencoded"。如果要发送 DOM 树信息或其它不希望转换的信息，请设置为 false。
-    url: null // (默认: 当前页地址) 发送请求的地址。
+    url: null, // (默认: 当前页地址) 发送请求的地址。
   }
 
   // 创建请求

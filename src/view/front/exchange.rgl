@@ -10,24 +10,31 @@
         </div>
         <div class="bgwhite pt50 pb30">
             <div class="container">
-                <ul class="cards-group clearfix">
-                    {#list cards as card}
-                    <li>
-                        <a title="{card.title}">
-                            <img src="{card.img}" title="{card.title}">
-                            <span class="title">{card.title}</span>
-                            <span class="tag">在线兑换率: {card.gaiLV}%</span>
-                        </a>
-                    </li>
-                    {/list}
-                </ul>
+                <table class="table trade-records">
+                    <thead>
+                        <tr>
+                            <th>卡种</th>
+                            <th>在线兑换率</th>
+                            <th>支持面值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#list cards as card}
+                        <tr>
+                            <td>{card.name}</td>
+                            <td>{card.saleRatio * 100}%</td>
+                            <td>{card.amounts}</td>
+                        </tr>
+                        {/list}
+                    </tbody>
+                </table>
                 <div class="clear"></div>
             </div>
         </div>
     </frontTemp>
 </template>
 <script>
-    import cardService from "../../service/cardService.js";
+    import {typeAndItemsQuery} from "../../service/cardService.js";
 
     export default {
         data: {
@@ -35,7 +42,7 @@
         },
         init() {
             var self = this;
-            cardService.getAll((datas)=>{
+            typeAndItemsQuery((datas)=>{
                 self.$update({
                     cards: datas
                 });

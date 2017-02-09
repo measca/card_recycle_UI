@@ -3,16 +3,38 @@
         <div class="view-framework-main">
             <h3 class="clearfix">
                 商家合作
-                <a class="btn btn-primary pull-right ml5" on-click={modalShowState = true}>保存更改</a>
+                <a class="btn btn-primary pull-right ml5" on-click={this.sendEdit()}>保存更改</a>
             </h3>
             <div class="box">
-                <FCKEditor></FCKEditor>
+                <FCKEditor value={context}></FCKEditor>
             </div>
         </div>
     </div>
 </template>
 <script>
+    import {cooperateQuery, cooperateModify} from "../../service/contentService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
+        data: {
+            context: '<p></p>'
+        },
+        init() {
+            var self = this;
+            self.$update("context", '<p></p>');
+            cooperateQuery(function (data) {
+                if(data) self.$update("context", data);
+            });
+        },
+        sendEdit() {
+            cooperateModify({
+                context: this.data.context
+            }, function() {
+                gritter("更改成功").success();
+            }, function(msg) {
+                gritter(msg).warning();
+            });
+        },
         components: {
             FCKEditor: require("../../control/FCKEditor/index.rgl")
         }

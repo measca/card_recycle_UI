@@ -13,7 +13,7 @@
                         <form onsubmit="return false;">
                             <div class="form-group">
                                 <label class="control-label"><span class="text-red">*</span> 用户名(E-mail)：</label>
-                                <input type="text" class="form-control" maxlength="15" r-model="user.eMail | trim">
+                                <input type="text" class="form-control" maxlength="30" r-model="user.eMail | trim">
                                 <div class="text-red" r-hide={$validation.eMail.isPass}>{$validation.eMail.msg}</div>
                             </div>
                             <div class="form-group">
@@ -33,7 +33,7 @@
                             </div>
                             <div class="form-group hide">
                                 <label class="control-label"><span class="text-red">*</span> 手机验证码：</label>
-                                <input type="text" class="form-control pull-left" maxlength="5" style="width: 210px;" r-model="user.phoneCode | trim">
+                                <input type="text" class="form-control pull-left" maxlength="6" style="width: 210px;" r-model="user.phoneCode | trim">
                                 <button type="button" class="btn btn-default btn-block pull-right" style="width: 100px;" {#if !$validation.phone.__isPass || sendTimeVal > 0 }disabled{/if} on-click={this.sendCode()}>
                                     获取验证码 {sendTimeVal > 0 ? sendTimeVal : ''}
                                 </button>
@@ -46,25 +46,19 @@
                                 <div class="text-red" r-hide={$validation.qq.isPass}>{$validation.qq.msg}</div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label"><span class="text-red">*</span> 验证码：</label>
-                                <div style="position: relative;">
-                                    <input type="text" class="form-control" maxlength="4" r-model="user.verifycode | trim">
-                                    <img src="http://www.lipin.com/include/code/getimg.php" class="verifyimg code" />
-                                </div>
-                                <div class="text-red" r-hide={$validation.verifycode.isPass}>{$validation.verifycode.msg}</div>
-                            </div>
-                            <div class="form-group">
                                 <label class="checkbox" tip="阅读和同意注册协议后才能注册！">
                                     <input type="checkbox" r-model="user.isAgree">已阅读并同意
                                     <a target="_blank" href="#/agreement">注册协议</a>
                                 </label>
                             </div>
                             <div class="form-group">
-                                <input class="btn btn-primary btn-block" type="submit" value="立即注册" on-click={this.register()} {#if !($validation.$isPass && user.isAgree)}disabled{/if}>
+                                <button class="btn btn-primary btn-block" type="submit" on-click={this.register()} {#if !($validation.$isPass && user.isAgree) || isSend}disabled{/if}>
+                                    {isSend ? "正在注册...":"立即注册"}
+                                </button>
                             </div>
                         </form>
                     </div>
-                    <div class="signbanner"><img style="margin-top: 110px" src="../../resource/front/sign.png"></div>
+                    <div class="signbanner"><img style="margin-top: 110px" src="{signImg}"></div>
                 </div>
                 <div class="box getpass" r-hide={showState != 1}>
                     <div class="safe-icon-box">
@@ -91,12 +85,19 @@
     </frontTemp>
 </template>
 <script>
+    import {signup} from "../../service/userService.js";
+    import {sendPhoneCode} from "../../service/otherService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+    import config from "web.config";
+
     export default {
         data: {
+            signImg: config.signImg,
             showState: 0,
             timeNum: 3,
             sendTime: -1,
             sendTimeVal: 0,
+            isSend: false,
             user: {
                 eMail: "",
                 passworld: "",
@@ -104,7 +105,6 @@
                 phone: "",
                 phoneCode: "",
                 qq: "",
-                verifycode: "",
                 isAgree: false
             }
         },
@@ -121,11 +121,19 @@
             }
         },
         register() {
-            this.$update({
-                showState: 1,
-                timeNum: 3
+            var self = this;
+            self.$update("isSend", true);
+            signup(this.data.user, ()=>{
+                self.$update({
+                    showState: 1,
+                    timeNum: 3
+                });
+                self.goLIndex();
+                self.$update("isSend", false);
+            }, (msg)=>{
+                self.$update("isSend", false);
+                gritter(msg).warning();
             });
-            this.goLIndex();
             return false;
         },
         sendCode() {
@@ -139,6 +147,7 @@
                     sendTimeVal: self.data.sendTimeVal - 1
                 });
             }, 1000);
+            sendPhoneCode({phone: this.data.user.phone});
         },
         goMIndex() {
             var self = this;
@@ -195,16 +204,10 @@
                 },
                 phoneCode: {
                     required: true,
-                    alphaDash: true,
-                    minlength: 4
+                    alphaDash: true
                 },
                 qq: {
                     qq: true
-                },
-                verifycode: {
-                    required: true,
-                    alphaDash: true,
-                    minlength: 4
                 }
             }
         }

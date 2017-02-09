@@ -16,7 +16,7 @@
                                     <label class="control-label" for="username">
                                         <i class="fa fa-user-o"></i>
                                     </label>
-                                    <input class="form-control" name="username" type="text" placeholder="邮箱/手机号码" maxlength="15" r-model="username | trim" autocomplete="off">
+                                    <input class="form-control" name="username" type="text" placeholder="邮箱" maxlength="30" r-model="username | trim">
                                     <div r-hide={$validation.username.isPass} class="text-red pt5">{$validation.username.msg}</div>
                                 </div>
                             </div>
@@ -25,7 +25,7 @@
                                     <label class="control-label" for="password">
                                         <i class="fa fa-unlock-alt"></i>
                                     </label>
-                                    <input class="form-control" name="password" type="password" placeholder="登录密码" maxlength="15" r-model="password | trim" autocomplete="off">
+                                    <input class="form-control" name="password" type="password" placeholder="登录密码" maxlength="15" r-model="password | trim">
                                     <div r-hide={$validation.password.isPass} class="text-red pt5">{$validation.password.msg}</div>
                                 </div>
                             </div>
@@ -33,19 +33,21 @@
                                 <div class="mr">
                                     <label class="control-label" for="verifycode"><i class="fa fa-shield"></i></label>
                                     <input type="text" class="form-control" name="verifycode" maxlength="4" placeholder="验证码" r-model="verifycode | trim" autocomplete="off">
-                                    <img src="http://www.lipin.com/include/code/getimg.php" class="verifyimg code" onclick="code(this);" tip="点击图片刷新验证码">
+                                    <img src="{vCodeImgURL}" class="verifyimg code" onclick="src=src+'?a=' + Math.random()" tip="点击图片刷新验证码">
                                     <div r-hide={$validation.verifycode.isPass} class="text-red pt5">{$validation.verifycode.msg}</div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <input class="btn btn-primary btn-block" type="submit" value="登 录" {#if !$validation.$isPass}disabled{/if}>
+                                <button class="btn btn-primary btn-block" type="submit" {#if !$validation.$isPass || isSend}disabled{/if}>
+                                    {isSend ? "正在登陆..." : "登 录"}
+                                </button>
                             </div>
                             <div class="form-group">
                                 <a class="btn-link pull-right" href="#/forgetpassword">忘记登录密码?</a>
                             </div>
                         </form>
                     </div>
-                    <div class="signbanner"><img src="../../resource/front/sign.png"></div>
+                    <div class="signbanner"><img src="{signImg}"></div>
                 </div>
                 <div class="box getpass" r-hide={!isSuccess}>
                     <div class="safe-icon-box">
@@ -63,6 +65,10 @@
 </template>
 <script>
 
+    import {signin} from "../../service/userService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+    import config from "web.config";
+
     export default {
         init() {
             if(isLogin()) {
@@ -77,6 +83,12 @@
                     isSuccess: false
                 });
             }
+            this.$update({
+                username: "",
+                password: "",
+                verifycode: ""
+            });
+            this.$update("vCodeImgURL", config.serverUrl + "/user/getVCode" + '?a=' + Math.random());
         },
         data: {
             username: "",
@@ -84,7 +96,10 @@
             verifycode: "",
             timeNum: 3,
             timeObj: -1,
-            isSuccess: false // 是否登录成功
+            isSuccess: false, // 是否登录成功
+            isSend: false,
+            vCodeImgURL: "",
+            signImg: config.signImg
         },
         components: {
             "frontTemp": require("../../component/frontTemplate/front.rgl")
@@ -92,25 +107,41 @@
         goMIndex() {
             var self = this;
             var time;
-            self.data.timeObj = time = setInterval(()=>{
-                if(self.data.timeNum == 1) {
-                    location.href = "#/user/index";
-                    clearInterval(time);
-                    return;
-                }
-                self.$update({
-                    timeNum: self.data.timeNum - 1
-                });
-            }, 1000);
+            location.href = "#/user/index";
+            // self.data.timeObj = time = setInterval(()=>{
+            //     if(self.data.timeNum == 1) {
+            //         location.href = "#/user/index";
+            //         clearInterval(time);
+            //         return;
+            //     }
+            //     self.$update({
+            //         timeNum: self.data.timeNum - 1
+            //     });
+            // }, 1000);
         },
         login() {
-            setWebUserName(this.data.username);
-            setWebUKey(this.data.username);
-            this.$update({
-                timeNum: 3,
-                isSuccess: true
+            var self = this;
+            this.$update("isSend", true);
+            signin({
+                username: this.data.username,
+                password: this.data.password,
+                verifycode: this.data.verifycode
+            }, (data)=>{
+                setWebUserName(data.username);
+                setWebUKey(data.token);
+                setWebUId(data.uid);
+                setWebTel(data.tel);
+                setWebLastLoginTime(data.lastLoginTime);
+                self.$update({
+                    timeNum: 3,
+                    isSuccess: true
+                });
+                self.goMIndex();
+                self.$update("isSend", false);
+            }, (msg)=>{
+                self.$update("isSend", false);
+                gritter(msg).warning();
             });
-            this.goMIndex();
             return false;
         },
         canLeave(){
@@ -121,10 +152,7 @@
                 username: {
                     required: true,
                     minlength: 6,
-                    or: {
-                        email: true,
-                        phone: true
-                    }
+                    email: true
                 },
                 password: {
                     required: true,
@@ -135,11 +163,6 @@
                     required: true,
                     alphaDash: true,
                     minlength: 4,
-                }
-            },
-            message: {
-                username: {
-                    or: "只能输入邮箱或者手机"
                 }
             }
         }

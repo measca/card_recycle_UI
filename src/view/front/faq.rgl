@@ -11,35 +11,24 @@
         <div class="bgwhite pt50 pb30">
             <div class="container">
                 <context showIndex="5">
-                    {#list faqs as faq}
-                        <div class="faq-item">
-                            <h6 class="faq-tite">
-                                <a class="text-danger" r-class="open: faq_index == showIndex" on-click={showIndex = faq_index}>
-                                    <strong>{faq_index + 1}、</strong>{faq.title}<i class="iconimg"></i>
-                                </a>
-                            </h6>
-                            <div class="faq-cont" r-hide={faq_index != showIndex} r-html={faq.context}></div>
-                        </div>
-                    {/list}
+                    <div r-html={context}></div>
                 </context>
             </div>
         </div>
     </frontTemp>
 </template>
 <script>
-    import webInfoService from "../../service/webInfoService.js";
+    import {problemsQuery} from "../../service/contentService.js";
 
     export default {
         data: {
-            showIndex: -1,
-            faqs: []
+            context: '<p></p>'
         },
         init() {
             var self = this;
-            webInfoService.getFaq((data)=>{
-                self.$update({
-                    faqs: data
-                });
+            self.$update("context", '<p></p>');
+            problemsQuery(function (data) {
+                if(data) self.$update("context", data);
             });
         },
         components: {

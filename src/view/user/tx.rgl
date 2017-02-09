@@ -6,6 +6,7 @@
                     <a class="btn btn-default pull-right ml5" href="#/user/index">返回个人中心</a>
                     申请提现
                 </h3>
+                {#if isShow}
                 <div class="box" r-hide={isSub}>
                     <div class="py50">
                         <form onsubmit="return false;">
@@ -18,7 +19,7 @@
                                         <select class="form-control" r-model="apply.account">
                                             <option value="">请选择收款账号</option>
                                             {#list accounts as account}
-                                            <option value="{account.id}">{account.context}</option>
+                                            <option value="{account.id}">{account.cardNum} - {account.name}</option>
                                             {/list}
                                         </select>
                                     </div>
@@ -49,25 +50,10 @@
                                 </div>
                                 <div class="clear"></div>
                             </div>
-                            <div class="form-group">
-                                <div class="col-xs-2">
-                                    <label class="control-label pt5">验证码：</label>
-                                </div>
-                                <div class="col-xs-2">
-                                    <input type="text" class="form-control" maxlength="4" r-model="apply.verifycode">
-                                </div>
-                                <div class="col-xs-2">
-                                    <img src="http://www.lipin.com/include/code/getimg.php" class="ml10">
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="text-red pt5 pl10" r-hide={$validation.verifycode.isPass}>{$validation.verifycode.msg}</div>
-                                </div>
-                                <div class="clear"></div>
-                            </div>
                             <hr>
                             <div class="form-group">
                                 <div class="col-xs-2">
-                                    <label class="control-label pt5">交易密码：</label>
+                                    <label class="control-label pt5">提现密码：</label>
                                 </div>
                                 <div class="col-xs-4">
                                     <input class="form-control" type="password" maxlength="15" r-model="apply.payPassword">
@@ -86,6 +72,7 @@
                         </form>
                     </div>
                 </div>
+                {/if}
                 <div class="box" r-hide={!isSub}>
                     <div class="nodata">
                         <i class="iconfont fa fa-check text-success"></i><br>
@@ -96,44 +83,94 @@
                         </p>
                     </div>
                 </div>
+                {#if !isTrueNameVerified}
+                <div class="box">
+                    <div class="nodata">
+                        <i class="iconfont fa fa-times text-danger"></i><br>
+                        你还没通过实名认证<br>
+                        <p class="mt20">
+                            <a class="btn btn-default btn-sm ml10" href="#/user/trueNameVerified">前往实名认证</a>
+                        </p>
+                    </div>
+                </div>
+                {/if}
             </div>
         </div>
     </headerTemp>
 </template>
 <script>
+    import {isTrueNameVerified, getEmailAndPhone, trueNameVerified, getMoneyMax} from "../../service/userService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+    import {getAll} from "../../service/bankCardService.js";
+    import {withdraw} from "../../service/moneyService.js";
+
     export default {
+        init() {
+            var self = this;
+            // isTrueNameVerified(()=>{
+            //     self.$update({
+            //         isTrueNameVerified: true,
+            //         isShow: true
+            //     });
+            // },()=>{
+            //     self.$update("isTrueNameVerified", false);
+            // });
+            self.refreshMoney();
+            getAll((datas)=>{
+                self.$update("accounts", datas);
+            });
+            getMoneyMax((data)=>{
+                self.$update({
+                    maxMoney: data.money
+                });
+            });
+        },
         data: {
+            isShow: true,
+            isTrueNameVerified: true,
             isSub: false,
-            maxMoney: 1000.00,
-            accounts: [{
-                id: 1,
-                context: "5896********6542"
-            }, {
-                id: 2,
-                context: "6984********5896"
-            }],
+            maxMoney: 0,
+            accounts: [],
             apply: {
                 account: "",
                 money: "",
-                verifycode: "",
                 payPassword: ""
             }
         },
         refreshMoney() {
-            this.$update({
-                maxMoney: 500,
+            var self = this;
+            self.$update({
                 isSub: false,
                 apply: {
                     account: "",
                     money: "",
-                    verifycode: "",
                     payPassword: ""   
                 }
             });
         },
         sendData() {
-            this.$update({
-                isSub: true
+            var self = this;
+            var bankName = "";
+            var cardNum = "";
+            for(var i=0,d; d = this.data.accounts[i++];) {
+                if(d.id == this.data.apply.account) {
+                    cardNum = d.cardNum;
+                    bankName = d.bankName;
+                }
+            }
+            withdraw({
+                withdrawAmount: this.data.apply.money,
+                withdrawPwd: this.data.apply.payPassword,
+                bankName: bankName,
+                bankId: this.data.apply.account,
+                cardNum: cardNum
+            }, (money)=>{
+                self.$update({
+                    isSub: true,
+                    maxMoney: money
+                });
+            }, (msg)=>{
+                gritter(msg).warning();
             });
         },
         components: {
@@ -149,14 +186,9 @@
                     required: true,
                     decimal: true,
                     max: 0,
-                    min: function() {
+                    eqmin: function() {
                         return this.data.maxMoney;
                     }
-                },
-                verifycode: {
-                    required: true,
-                    alphaDash: true,
-                    minlength: 4,
                 },
                 payPassword: {
                     required: true,

@@ -1,0 +1,139 @@
+<template>
+    <modal title="充值卡类型所支持的金额" ref="modal">
+        <div class="pt20 pb10" onsubmit="return false;">
+            <form class="form-group" onsubmit="return false;">
+                <div class="col-xs-3 text-right">
+                    <label class="control-label pt5 pr10">面值大小（元）：</label>
+                </div>
+                <div class="col-xs-5">
+                    <input type="text" class="form-control" maxlength="20" r-model="money">
+                </div>
+                <div class="col-xs-1 pl20">
+                    <input type="submit" class="btn btn-primary btn-block" value="添加" on-click={this.addMoneyData()} {#if !this.isNum(this.data.money)}disabled{/if}>
+                </div>
+                <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.name.isPass}>{$validation.name.msg}</div>
+                <div class="clear"></div>
+            </form>
+            <div class="form-group">
+                <table class="table trade-records">
+                    <thead>
+                        <tr>
+                            <th>面值</th>
+                            <th style="width: 200px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#list moneys as money}
+                        <tr r-hide={money.isEdit}>
+                            <td>{money.supportAmount}</td>
+                            <td>
+                                <a href="javascript:;" class="btn btn-info-alt" on-click={this.editMoneyData(money)}>编辑</a>
+                                <a href="javascript:;" class="btn btn-default-alt ml10" on-click={this.delMoneyData(money.id)}>删除</a>
+                            </td>
+                        </tr>
+                        <tr r-hide={!money.isEdit}>
+                            <td><input type="text" class="form-control" maxlength="20" r-model={money.editSupportAmount}></td>
+                            <td>
+                                <button type="button" class="btn btn-success-alt" on-click={this.sendEditMoneyData(money)} {#if !this.isNum(money.editSupportAmount)}disabled{/if}>提交</button>
+                                <a href="javascript:;" class="btn btn-default-alt ml10" on-click={money.isEdit = false}>取消</a>
+                            </td>
+                        </tr>
+                        {/list}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </modal>
+</template>
+<script>
+    import {addMoneyItem, editMoneyItem, delMoneyItem, getMoneyItemAll} from "../../../../service/cardService.js";
+    import gritter from "../../../../tool/gritter/gritter.js";
+    import confirm from "../../../../tool/confirm/index.js";
+    
+    export default {
+        data: {
+            id: 0,
+            money: "",
+            moneys: []
+        },
+        components: {
+            modal: require("../../../../control/modal/index.rgl")
+        },
+        show(id){
+            this.$update({
+                id: id,
+                money: "",
+                moneys: []
+            });
+            this.initList();
+            this.$refs.modal.show();
+        },
+        hidden() {
+            this.$refs.modal.hidden();
+        },
+        addMoneyData() {
+            var self = this;
+            addMoneyItem({
+                id: this.data.id,
+                money: this.data.money
+            }, ()=>{
+                self.$update("money", "");
+                self.initList();
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        editMoneyData(data) {
+            data.isEdit = true;
+            data.editSupportAmount = data.supportAmount;
+            this.$update();
+        },
+        sendEditMoneyData(data) {
+            var self = this;
+            editMoneyItem({
+                id: data.id,
+                money: data.editSupportAmount
+            }, ()=>{
+                data.isEdit = false;
+                data.supportAmount = data.editSupportAmount;
+                this.$update();
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        delMoneyData(id) {
+            var self = this;
+            confirm.ajax("确定删除？", ()=>{
+                delMoneyItem({
+                    id: id
+                }, ()=>{
+                    self.initList();
+                    confirm.alert("删除成功");
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        isNum(val) {
+            return /^\-?\d*\.?\d+$/.test(val);
+        },
+        initList() {
+            var self = this;
+            getMoneyItemAll({
+                id: this.data.id
+            }, function(datas) {
+                datas = datas || [];
+                var moneys = [];
+                for(var i = 0, d; d = datas[i++];) {
+                    moneys.push({
+                        id: d.id,
+                        isEdit: false,
+                        supportAmount: d.supportAmount,
+                        editSupportAmount: d.supportAmount
+                    });
+                }
+                self.$update("moneys", moneys);
+            });
+        }
+    }
+</script>

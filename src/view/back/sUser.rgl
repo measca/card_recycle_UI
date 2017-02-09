@@ -5,39 +5,32 @@
                 <a class="btn btn-primary pull-right ml5" on-click={this.show()}>添加管理员</a>
                 系统用户
             </h3>
-            <div class="box">
+            <div class="box" r-hide={userList.length > 0}>
                 <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
             </div>
-            <table class="table trade-records">
+            <table class="table trade-records" r-hide={userList.length <= 0}>
                 <thead>
                     <tr>
                         <th>用户名</th>
-                        <th>账号状态<span class="text-muted">（点击即可改变状态）</span></th>
-                        <th>创建时间</th>
+                        <!--<th>账号状态<span class="text-muted">（点击即可改变状态）</span></th>-->
+                        <!--<th>创建时间</th>-->
                         <th style="width: 80px">操作</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {#list userList as item}
                     <tr>
-                        <td>-</td>
-                        <td><a class="text-success" r-tooltip="冻结该账户">正常</a></td>
-                        <td>-</td>
+                        <td>{item.account}</td>
+                        <!--<td><a class="text-success" r-tooltip="冻结该账户">正常</a></td>-->
+                        <!--<td>-</td>-->
                         <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="重置密码" on-click={this.resetPassword()}><i class="fa fa-refresh"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
+                            <!--<a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="重置密码" on-click={this.resetPassword(item.id)}><i class="fa fa-refresh"></i></a>-->
+                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del(item.id)}><i class="fa fa-times-circle"></i></a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>-</td>
-                        <td><a class="text-danger" r-tooltip="解冻该账户">冻结</a></td>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="重置密码" on-click={this.resetPassword()}><i class="fa fa-refresh"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
-                        </td>
-                    </tr>
+                    {/list}
                 </tbody>
-                <tfoot>
+                <!--<tfoot>
                     <tr>
                         <td colspan="8">
                             <div class="pull-right">
@@ -46,19 +39,20 @@
                             <div class="clear"></div>
                         </td>
                     </tr>
-                </tfoot>
+                </tfoot>-->
             </table>
         </div>
         <modal title="添加管理员" ref="modal">
-            <form class="pt20 pb10">
+            <form class="pt20 pb10" onsubmit="return false;">
                 <div class="form-group">
                     <div class="col-xs-4 text-right">
                         <label class="control-label pt5 pr10">用户名：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">
-                            <input type="text" class="form-control">
-                        </div>
+                        <input type="text" class="form-control" r-model="user.userName" maxlength="15">
+                    </div>
+                    <div class="col-xs-8 col-xs-offset-4">
+                        <div class="text-red" r-hide={$validation.userName.isPass}>{$validation.userName.msg}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -67,9 +61,10 @@
                         <label class="control-label pt5 pr10">登录密码：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">
-                            <input type="password" class="form-control">
-                        </div>
+                        <input type="password" class="form-control" r-model="user.password" maxlength="15">
+                    </div>
+                    <div class="col-xs-8 col-xs-offset-4">
+                        <div class="text-red" r-hide={$validation.password.isPass}>{$validation.password.msg}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -78,15 +73,16 @@
                         <label class="control-label pt5 pr10" for="oldpsw">重新输入密码：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">
-                            <input type="password" class="form-control">
-                        </div>
+                        <input type="password" class="form-control" r-model="user.passwordTwo" maxlength="15">
+                    </div>
+                    <div class="col-xs-8 col-xs-offset-4">
+                        <div class="text-red" r-hide={$validation.passwordTwo.isPass}>{$validation.passwordTwo.msg}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">
                     <div class="col-xs-5 col-xs-offset-4">
-                        <input type="submit" class="btn btn-primary btn-block" name="newpass" value="提交" onclick="return regform(this);">
+                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.addUser()}>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -97,9 +93,16 @@
 <script>
     import confirm from "../../tool/confirm/index.js";
 
+    import {addUser, getUserList, resetUserPwd, delUser} from "../../service/adminUserService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
+        init() {
+            this.initList();
+        },
         data: {
             modalShowState: false,
+            userList: [],
             user: {
                 userName: '',
                 password: "",
@@ -113,26 +116,70 @@
         show() {
             this.$refs.modal.show();
         },
-        del() {
-            confirm.ajax("确定删除？", ()=>{
-                setTimeout(function() {
-                    confirm.alert("删除成功");
-                }, 3000);
+        addUser() {
+            var self = this;
+            addUser(this.data.user, ()=>{
+                self.$refs.modal.hidden();
+                self.$update({
+                    user: {
+                        userName: '',
+                        password: "",
+                        passwordTwo: ""
+                    }
+                });
+                self.initList();
+            }, (msg)=>{
+                gritter(msg).warning();
             });
         },
-        resetPassword() {
-            confirm.ajax("确定重置该用户的密码为：adcd1234？", ()=>{
-                setTimeout(function() {
+        del(id) {
+            var self = this;
+            confirm.ajax("确定删除？", ()=>{
+                delUser({
+                    id: id
+                }, function() {
+                    self.initList();
+                    confirm.alert("删除成功");
+                }, function(msg) {
+                    confirm.alert(msg);
+                });
+            });
+        },
+        resetPassword(id) {
+            confirm.ajax("确定重置该用户的密码为：adcd123？", ()=>{
+                resetUserPwd({
+                    id: id
+                }, function() {
                     confirm.alert("重置成功");
-                }, 3000);
+                }, function(msg) {
+                    confirm.alert(msg);
+                });
+            });
+        },
+        initList() {
+            var self = this;
+            getUserList(function(datas) {
+                self.$update("userList", datas);
             });
         },
         validation: {
-            baseAtteName: "user",
+            baseAttrName: "user",
             model: {
-                state: {
-                    required: true
-                }
+                userName: {
+                    required: true,
+                    alphaDash: true,
+                    minlength: 5
+                },
+                password: {
+                    required: true,
+                    alphaDash: true,
+                    minlength: 6
+                },
+                passworldTwo: {
+                    required: true,
+                    repeat: "user.password",
+                    minlength: 6
+                },
             }
         }
     }

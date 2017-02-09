@@ -14,8 +14,11 @@ Regular.use(trim);
 
 import cookie from "../tool/cookie.js";
 
+import {logout} from "../service/userService";
+import {loginOut} from "../service/adminUserService";
+
 window.isLogin = ()=>{
-     return !!cookie.get("userName") && !!cookie.get("uKey");
+     return !!cookie.get("userName") && !!cookie.get("uKey") && !!cookie.get("uId");
 }
 window.getWebUserName = ()=>{
     return cookie.get("userName");
@@ -29,9 +32,31 @@ window.getWebUKey = ()=>{
 window.setWebUKey = (val)=>{
     cookie.set("uKey", val);
 }
+window.getWebUId = ()=>{
+    return cookie.get("uId");
+}
+window.setWebUId = (val)=>{
+    cookie.set("uId", val);
+}
+window.getWebTel = ()=>{
+    return cookie.get("uTel");
+}
+window.setWebTel = (val)=>{
+    cookie.set("uTel", val);
+}
+window.getWebLastLoginTime = ()=>{
+    return cookie.get("uLastLoginTime");
+}
+window.setWebLastLoginTime = (val)=>{
+    cookie.set("uLastLoginTime", val);
+}
 window.removeUserNameAndUKey = ()=>{
+    logout(getWebUKey());
     cookie.remove("userName");
     cookie.remove("uKey");
+    cookie.remove("uId");
+    cookie.remove("uTel");
+    cookie.remove("uLastLoginTime");
 }
 
 window.isSpLogin = ()=>{
@@ -50,6 +75,7 @@ window.setWebSpUKey = (val)=>{
     cookie.set("spUKey", val);
 }
 window.removeSpUserNameAndSpUKey = ()=>{
+    loginOut(getWebSpUKey());
     cookie.remove("spUserName");
     cookie.remove("spUKey");
 }

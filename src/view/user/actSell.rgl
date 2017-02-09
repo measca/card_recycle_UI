@@ -5,22 +5,22 @@
                 <a class="btn btn-default btn-small pull-right" href="#/user/actSelldetail">查看我的订单记录</a>
                 我要寄售
             </h3>
-            <div class="box">
+            <div class="box" r-hide={isSub}>
                 <div class="recycle-panel">
                     <div class="alert">
                         <p><strong>提示：</strong>为了更有效快捷的交易，请务必填写正确的且未使用的卡号与卡密。如发现恶性提交，我们将实行冻结账号，封号等措施。</p>
                     </div>
                     <div class="recycle-form">
-                        <form action="">
+                        <form onsubmit="return false;">
                             <div class="form-group">
                                 <div class="col-xs-1"><label class="control-label">选择卡种：</label></div>
                                 <div class="col-xs-11">
                                     <ul class="btn-group-card">
                                         {#list cards as card}
-                                        <li r-class="active: sendData.card == card" on-click={this.selectCard(card)}>
-                                            <a title="{card.title}">
-                                                <img src="{card.img}" alt="{card.title}">
-                                                <span class="title">{card.title}</span>
+                                        <li r-class="active: sendData.cardId == card.id" on-click={this.selectCard(card)}>
+                                            <a title="{card.name}">
+                                                <!--<img src="{card.img}" alt="{card.title}">-->
+                                                <span class="title">{card.name}</span>
                                                 <b></b>
                                             </a>
                                         </li>
@@ -34,8 +34,8 @@
                                 <div class="col-xs-11">
                                     <ul class="btn-group-price" id="card-facevalue">
                                         {#list moneys as money}
-                                        <li r-class="active: sendData.money == money.v" on-click={sendData.money = money.v}>
-                                            <a class="btn">¥{money.v} <small>/ ¥{money.z}(回收价)</small><b></b></a>
+                                        <li r-class="active: sendData.money == money" on-click={this.moneyClick(money)}>
+                                            <a class="btn">¥{money.money} <small>/ ¥{money.meritMoney}(回收价)</small><b></b></a>
                                         </li>
                                         {/list}
                                     </ul>
@@ -46,23 +46,23 @@
                             <div class="form-group">
                                 <div class="col-xs-1 pt5"><label class="control-label">选择数量：</label></div>
                                 <div class="col-xs-11">
-                                    <span class="text-muted">{cardDatas.length}张</span>
+                                    <span class="text-muted">{sendData.cardDatas.length}张</span>
                                     <a class="btn btn-default ml20" on-click={this.addCardData()}>增加</a>
                                 </div>
                                 <div class="clear"></div>
                             </div>
-                            {#list cardDatas as cardData}
+                            {#list sendData.cardDatas as cardData}
                             <div class="form-group">
                                 <div class="col-xs-1 pt5"><label class="control-label">输入卡号：</label></div>
                                 <div class="col-xs-3">
                                     <div class="mr30">
-                                        <input class="form-control" type="text" placeholder="输入卡号" maxlength="15" r-model={cardData.a} on-keydown="">
+                                        <input class="form-control" type="text" placeholder="输入卡号" maxlength="50" r-model={cardData.account} on-keyup={this.verifyData()}>
                                     </div>
                                 </div>
                                 <div class="col-xs-1 pt5"><label class="control-label">输入密码：</label></div>
                                 <div class="col-xs-3">
                                     <div class="mr30">
-                                        <input class="form-control" type="password" placeholder="请输入密码" maxlength="15" r-model={cardData.p}>
+                                        <input class="form-control" type="text" placeholder="请输入密码" maxlength="50" r-model={cardData.password} on-keyup={this.verifyData()}>
                                     </div>
                                 </div>
                                 <div class="col-xs-3">
@@ -77,79 +77,177 @@
                             <div class="form-group">
                                 <div class="col-xs-11 col-xs-offset-1">
                                     <label class="checkbox">
-                                        <input type="checkbox">
+                                        <input type="checkbox" r-model="sendData.isAgree" on-change={this.verifyData()}>
                                         我已阅读，理解并接受[<a target="_blank" href="#/disclaimer">充值卡转让协议</a>]
                                     </label>
                                 </div>
                                 <div class="clear"></div>
                             </div>
                             <div class="col-xs-11 col-xs-offset-1">
-                                <input class="btn btn-green btn-lg pull-left" type="submit" value="确认提交卖卡">
+                                <input class="btn btn-green btn-lg pull-left" type="submit" value="确认提交卖卡" {#if !isSuccess || isSend}disabled{/if} on-click={this.sendRecycle()}>
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+            <div class="box" r-hide={!isSub}>
+                <div class="nodata">
+                    <i class="iconfont fa fa-check text-success"></i><br>
+                    操作成功<br>
+                    <p class="mt20">
+                        <a class="btn btn-success btn-sm" on-click={this.refresh()}>继续操作</a>
+                        <a class="btn btn-default btn-sm ml10" href="#/user/index">返回首页</a>
+                    </p>
                 </div>
             </div>
         </div>
     </headerTemp>
 </template>
 <script>
-    import cardService from "../../service/cardService.js";
+    import {getAll, recycle, getItemAll} from "../../service/cardService.js";
+    import gritter from "../../tool/gritter/gritter.js";
 
     export default {
         data: {
             cards: [],
             moneys: [],
             sendData: {
-                card: "",
-                money: "",
+                isAgree: false,
+                cardId: null,
+                money: null,
+                cardDatas: []
             },
-            cardDatas: [],
-            isSuccess: false
+            isSuccess: false,
+            isSub: false,
+            isSend: false
         },
         init() {
             var self = this;
-            cardService.getAll((datas)=>{
+            this.$update({
+                isSend: false
+            });
+            getAll((datas)=>{
                 self.$update({
                     cards: datas
                 });
             });
         },
+        verifyData() {
+            var state = true;
+            if(!this.data.sendData.isAgree) {
+                state = false;
+            } else if(!this.data.sendData.cardId) {
+                state = false;
+            } else if(!this.data.sendData.money) {
+                state = false;
+            } else if(this.data.sendData.cardDatas.length <= 0) {
+                state = false;
+            }
+            for(var i = 0, d; d = this.data.sendData.cardDatas[i++];) {
+                if(!d.account || !d.password) {
+                    state = false;
+                    break;
+                }
+            }
+            this.$update("isSuccess", state);
+        },
+        moneyClick(money) {
+            this.data.sendData.money = money;
+            this.verifyData();
+        },
         addCardData() {
-            this.data.cardDatas.push({
-                a: "",
-                z: ""
+            this.data.sendData.cardDatas.push({
+                account: "",
+                password: ""
             });
             this.$update();
+            this.verifyData();
         },
         removeCardData(card) {
             var cardDatas = [];
-            for(var i = 0, d; d = this.data.cardDatas[i++];) {
+            for(var i = 0, d; d = this.data.sendData.cardDatas[i++];) {
                 if(d != card) cardDatas.push(d);
             }
-            this.$update({
-                cardDatas: cardDatas
-            });
+            this.$update("sendData.cardDatas", cardDatas);
+            this.verifyData();
         },
         selectCard(card) {
-            this.data.sendData.card = card;
-            this.data.sendData.money = "";
-            var moneys = [];
-            var moneyArr = card.moneys.split(" ");
-            for(var i = 0; i< moneyArr.length; i++) {
-                var m = parseFloat(moneyArr[i]) * (card.gaiLV * 0.01);
-                moneys.push({
-                    v: parseFloat(moneyArr[i]),
-                    z: m
-                });
-            }
+            this.data.sendData.cardId = card.id;
+            this.data.sendData.money = null;
             this.$update({
-                moneys: moneys
+                moneys: []
             });
+            var self = this;
+            getItemAll({id: card.id}, (datas)=>{
+                datas = datas || [];
+                var moneys = [];
+                for(var i = 0, d; d = datas[i++];) {
+                    var m = parseFloat(d.supportAmount) * (parseFloat(card.saleRatio) * 0.01).toFixed(2);
+                    moneys.push({
+                        id: d.id,
+                        money: parseFloat(d.supportAmount),
+                        meritMoney: m
+                    });
+                }
+                this.$update({
+                    moneys: moneys
+                });
+            });
+            // var moneyArr = card.moneys;
+            // for(var i = 0; i< moneyArr.length; i++) {
+            //     var m = parseFloat(moneyArr[i].num) * (card.probability * 0.01);
+            //     moneys.push({
+            //         id: moneyArr[i].id,
+            //         money: parseFloat(moneyArr[i].num),
+            //         meritMoney: m
+            //     });
+            // }
+            // this.$update({
+            //     moneys: moneys
+            // });
+            this.verifyData();
         },
         selectMoney(money) {
             this.data.sendData.money = money;
             this.$update();
+        },
+        sendRecycle() {
+            var self = this;
+            var cardCode = "";
+            for(var i = 0, d; d = this.data.cards[i++];) {
+                if(d.id == this.data.sendData.cardId) {
+                    cardCode = d.cardCode;
+                }
+            }
+            var data = {
+                cardCode: cardCode,
+                cardId: this.data.sendData.cardId,
+                moneyId: this.data.sendData.money.id,
+                list: this.data.sendData.cardDatas
+            };
+            this.$update({
+                isSend: true
+            });
+            recycle(data, ()=>{
+                self.$update("isSub", true);
+                this.$update("isSend", false);
+            }, (msg)=>{
+                this.$update("isSend", false);
+                gritter(msg).warning();
+            });
+        },
+        refresh() {
+            this.$update({
+                isSub: false,
+                isSuccess: false,
+                moneys: [],
+                sendData: {
+                    isAgree: false,
+                    cardId: null,
+                    money: null,
+                    cardDatas: []
+                }
+            });
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl")

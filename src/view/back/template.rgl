@@ -78,7 +78,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-xs-4 col-xs-offset-4">
-                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if}>
+                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.editPwd()}>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -88,6 +88,8 @@
 </template>
 <script>
 	import "./scss/template.scss";
+    import {editPwd} from "../../service/adminUserService.js";
+    import gritter from "../../tool/gritter/gritter.js";
 
     var menus = [{
         id: 0,
@@ -143,23 +145,20 @@
                 url: "#/supervise/sUser"
             }]
         }, {
-            id: 12,
-            icon: "fa fa-cny",
-            title: "提款设置",
-            child: [{
-                id: 13,
-                title: "手续费设置",
-                url: "#/supervise/fees"
-            }]
-        }, {
             id: 14,
             icon: "fa fa-gear",
             title: "网站信息配置",
             child: [{
-                id: 15,
-                title: "网站信息",
-                url: "#/supervise/info"
-            }, {
+                id: 21,
+                title: '常见问题',
+                url: "#/supervise/faq"
+            }, 
+            // {
+            //     id: 15,
+            //     title: "网站信息",
+            //     url: "#/supervise/info"
+            // }, 
+            {
                 id: 16,
                 title: "公司简介",
                 url: "#/supervise/introduction"
@@ -179,15 +178,24 @@
                 id: 20,
                 title: "服务条款",
                 url: "#/supervise/agreement"
-            }, {
-                id: 21,
-                title: '常见问题',
-                url: "#/supervise/faq"
             }]
         }]
     }];
+    // {
+    //         id: 12,
+    //         icon: "fa fa-cny",
+    //         title: "提款设置",
+    //         child: [{
+    //             id: 13,
+    //             title: "手续费设置",
+    //             url: "#/supervise/fees"
+    //         }]
+    //     }, 
 
 	export default {
+        init() {
+            this.$update("userName", getWebSpUserName());
+        },
 		data: {
             userName: getWebSpUserName(),
             menus: menus,
@@ -209,23 +217,38 @@
             removeSpUserNameAndSpUKey();
             location.href = "#/superviseLogin";
         },
+        editPwd() {
+            var self = this;
+            editPwd(this.data.editPassword, function() {
+                self.$update({
+                    editPassword: {
+                        oldPassword: "",
+                        newPassword: "",
+                        newPasswordTwo: ""
+                    }
+                });
+                self.$refs.editPasswordMoadl.hidden();
+            }, function(msg) {
+                gritter(msg).warning();
+            });
+        },
         validation: {
             baseAttrName: "editPassword",
             model: {
                 oldPassword: {
                     required: true,
                     alphaDash: true,
-                    minlength: 7
+                    minlength: 6
                 },
                 newPassword: {
                     required: true,
                     alphaDash: true,
-                    minlength: 7
+                    minlength: 6
                 },
                 newPasswordTwo: {
                     required: true,
                     repeat: "editPassword.newPassword",
-                    minlength: 7
+                    minlength: 6
                 },
             }
         }

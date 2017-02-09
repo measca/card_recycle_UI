@@ -47,27 +47,20 @@
       __Pages: []
     },
     init() {
-      var isInit = 0;
       this.__InitPages(this.data.currentPage);
       this.$watch("currentPage", (newVal)=>{
         this.__InitPages(newVal);
-        isInit++;
-        if(isInit > 2) this.$emit("change", newVal, this.data.perPages);
       });
       this.$watch("perPages", (newVal)=>{
         this.__InitPages(this.data.currentPage);
-        isInit++;
-        if(isInit > 2) this.$emit("change", newVal, this.data.perPages);
       });
       this.$watch("showPages", (newVal)=>{
         this.__InitPages(this.data.currentPage);
-        isInit++;
-        if(isInit > 2) this.$emit("change", newVal, this.data.perPages);
       });
-      isInit = false;
-    },
-    events: {
-      change(page, perPages) {}
+      this.$watch("totalItems", (newVal)=>{
+        this.__InitPages(this.data.currentPage);
+      });
+      this.$emit("change", this.data.currentPage, this.data.perPages);
     },
     __InitPages: function (c) {
       var max = Math.ceil(this.data.totalItems / this.data.perPages), pages = [], s = this.data.showPages;
@@ -106,7 +99,7 @@
     },
     __GoPage(page) {
       if(isNaN(page) || page === this.data.currentPage || page < 1 || page > this.data.__TotalPages) return;
-      this.data.currentPage = Math.floor(page);
+      this.$update("currentPage", Math.floor(page));
     },
     __PrevPage(){
       this.__GoPage(this.data.currentPage - 1);

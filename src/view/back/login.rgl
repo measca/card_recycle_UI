@@ -5,27 +5,30 @@
       <img src="../../resource/front/logo_transparent.png" class="mt50">
       <div class="login-body" ref="body">
         <div class="login-body-bg"></div>
-        <div class="login-form">
+        <form class="login-form" onsubmit="return false">
           <h4 class="login-title">登录：</h4>
-          <p class="login-text">欢迎登录，{name}</p>
+          <p class="login-text">欢迎登录,{webName}</p>
           <div class="input-icon left">
             <i class="fa fa-fw fa-user tooltips"></i>
-            <input type="text" class="form-control" placeholder="请输入用户名" maxlength="15" r-model="user.userName">
+            <input type="text" class="form-control" placeholder="请输入用户名" maxlength="15" r-model="user.username">
           </div>
-          <div class="text-red" r-hide={$validation.userName.isPass}>{$validation.userName.msg}</div>
+          <div class="text-red" r-hide={$validation.username.isPass}>{$validation.username.msg}</div>
           <div class="input-icon left mt15">
             <i class="fa fa-fw fa-unlock-alt tooltips"></i>
             <input type="password" class="form-control" placeholder="请输入密码" maxlength="15" r-model="user.password">
           </div>
           <div class="text-red" r-hide={$validation.password.isPass}>{$validation.password.msg}</div>
-          <button type="button" class="btn btn-success btn-block mt25" {#if !$validation.$isPass}disabled{/if} on-click={this.login()}>登录</button>
-        </div>
+          <button type="submit" class="btn btn-success btn-block mt25" {#if !$validation.$isPass}disabled{/if} on-click={this.login()}>登录</button>
+        </form>
       </div>
     </div>
   </div>
 </template>
 <script>
   import "./scss/login.scss";
+  import {login} from "../../service/adminUserService.js";
+  import gritter from "../../tool/gritter/gritter.js";
+  import config from "web.config";
 
   export default {
     init() {
@@ -34,32 +37,38 @@
       }
     },
     data: {
-      name: webInfo.name,
+      webName: config.webName,
       user: {
-        userName: "",
+        username: "",
         password: ""
       }
     },
     login(){
-      setWebSpUserName(this.data.user.userName);
-      setWebSpUKey(this.data.user.userName);
-      location.href = "#/supervise/index"
+      var self = this;
+      login(this.data.user, (data)=>{
+        self.$update("user", {
+          username: "",
+          password: ""
+        });
+        setWebSpUserName(data.username);
+        setWebSpUKey(data.token);
+        location.href = "#/supervise/index"
+      }, (msg)=>{
+        gritter(msg).warning();
+      });
     },
     validation: {
         baseAttrName: "user",
         model: {
-            account: {
-                required: true
-            },
-            userName: {
+            username: {
                 required: true,
                 alphaDash: true,
-                minlength: 6
+                minlength: 5
             },
             password: {
                 required: true,
                 alphaDash: true,
-                minlength: 7
+                minlength: 6
             },
         }
     }

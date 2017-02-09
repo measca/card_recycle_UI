@@ -6,16 +6,18 @@
                     新增收款账号
                     <a class="btn btn-default pull-right ml5" href="#/user/bankCard">返回我的收款账号</a>
                 </h3>
-                <div class="box">
+                {#if isShow}
+                <div class="box" r-hide={isSub}>
                     <div class="py50">
-                        <form action="/account/act_password" method="post" id="newpass">
+                        <form onsubmit="return false;">
                             <div class="form-group">
                                 <div class="col-xs-2">
                                     <label class="control-label" for="oldpsw">收款姓名：</label>
                                 </div>
                                 <div class="col-xs-4">
-                                    <div class="mr4">Bless</div>
+                                    <input class="form-control" type="text" r-model="name" maxlength="5">
                                 </div>
+                                <div r-hide={$validation.name.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.name.msg}</div>
                                 <div class="clear"></div>
                             </div>
                             <div class="form-group">
@@ -23,11 +25,14 @@
                                     <label class="control-label pt5">收款银行：</label>
                                 </div>
                                 <div class="col-xs-4">
-                                    <select class="form-control" r-model="state">
+                                    <select class="form-control" r-model="bankId">
                                         <option value="">请选择收款银行</option>
+                                        {#list bankList as bank}
+                                        <option value="{bank.id}">{bank.name}</option>
+                                        {/list}
                                     </select>
                                 </div>
-                                <div r-hide={$validation.state.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.state.msg}</div>
+                                <div r-hide={$validation.bankId.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.bankId.msg}</div>
                                 <div class="clear"></div>
                             </div>
                             <div class="form-group">
@@ -35,52 +40,115 @@
                                     <label class="control-label pt5">收款账号：</label>
                                 </div>
                                 <div class="col-xs-4">
-                                    <input class="form-control" type="text" r-model="access">
+                                    <input class="form-control" type="text" r-model="account" maxlength="30">
                                 </div>
-                                <div r-hide={$validation.access.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.access.msg}</div>
+                                <div r-hide={$validation.account.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.account.msg}</div>
                                 <div class="clear"></div>
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-4 col-xs-offset-2">
-                                    <input class="btn btn-primary btn-block" type="submit" name="newpass" value="提交" onclick="return regform(this);">
+                                    <input class="btn btn-primary btn-block" type="submit" {#if !($validation.$isPass)}disabled{/if} value="提交" on-click={this.add()}>
                                 </div>
                                 <div class="clear"></div>
                             </div>
                         </form>
                     </div>
                 </div>
+                {/if}
                 <div class="box" r-hide={!isSub}>
                     <div class="nodata">
                         <i class="iconfont fa fa-check text-success"></i><br>
                         操作成功<br>
                         <p class="mt20">
-                            <a class="btn btn-success btn-sm" on-click={this.refreshMoney()}>继续操作</a>
+                            <a class="btn btn-success btn-sm" on-click={isSub = false}>继续操作</a>
                             <a class="btn btn-default btn-sm ml10" href="#/user/index">返回首页</a>
                         </p>
                     </div>
                 </div>
+                {#if !isTrueNameVerified}
+                <div class="box">
+                    <div class="nodata">
+                        <i class="iconfont fa fa-times text-danger"></i><br>
+                        你还没通过实名认证<br>
+                        <p class="mt20">
+                            <a class="btn btn-default btn-sm ml10" href="#/user/trueNameVerified">前往实名认证</a>
+                        </p>
+                    </div>
+                </div>
+                {/if}
             </div>
         </div>
     </headerTemp>
 </template>
 <script>
+    import {isTrueNameVerified} from "../../service/userService.js";
+    import {add, getBankListAtUser} from "../../service/bankCardService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
+        init() {
+            var self = this;
+            isTrueNameVerified(()=>{
+                self.$update({
+                    isTrueNameVerified: true,
+                    isShow: true
+                });
+            },()=>{
+                self.$update("isTrueNameVerified", false);
+            });
+            getBankListAtUser((banks)=>{
+                self.$update("bankList", banks);
+            });
+        },
         data: {
-            state: "",
-            access: ""
+            isShow: false,
+            isTrueNameVerified: true,
+            bankList: [],
+            bankId: "",
+            account: "",
+            name: '',
+            isSub: false
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl")
         },
+        add() {
+            var self = this;
+            var bankName = "";
+            for(var i=0,d; d = this.data.bankList[i++];) {
+                if(d.id == this.data.bankId) {
+                    bankName = d.name;
+                }
+            }
+            add({
+                bankName: bankName,
+                name: this.data.name,
+                bankId: this.data.bankId,
+                account: this.data.account
+            }, ()=>{
+                self.$update({
+                    isSub: true,
+                    bankId: "",
+                    name: "",
+                    account: ""
+                });
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
         validation: {
             model: {
-                state: {
+                bankId: {
                     required: true,
                 },
-                access: {
+                account: {
                     required: true,
                     alphaDash: true,
                     minlength: 7
+                },
+                name: {
+                    required: true,
+                    chs: true
                 }
             }
         }

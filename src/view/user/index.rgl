@@ -13,15 +13,6 @@
                                     <div class="assets-icon">
                                         <i class="iconfont fa fa-cny"></i>
                                     </div>
-                                    <div class="assets-title">总提款金额（元）：</div>
-                                    <div class="assets-money">{countMoney}</div>
-                                </div>
-                            </div>
-                            <div class="col-xs-4">
-                                <div class="assets-yue">
-                                    <div class="assets-icon">
-                                        <i class="iconfont fa fa-cny"></i>
-                                    </div>
                                     <div class="assets-title">账户余额（元）：</div>
                                     <div class="assets-money">{money}</div>
                                 </div>
@@ -32,7 +23,6 @@
                                         <a href="#/user/tx" class="btn btn-primary btn-sm mr30">提现</a>
                                         <a href="#/user/actCashrecords">提现记录</a>
                                     </p>
-                                    <p class="text-muted pt10">提现处理中，金额：¥{tMoney}</p>
                                 </div>
                             </div>
                             <div class="clear"></div>
@@ -53,7 +43,7 @@
                             <div class="clear"></div>
                         </div>
                     </li>
-                    <li>
+                    <!--<li>
                         <div class="security-item clearfix">
                             <div class="col-xs-offset-1 col-xs-2">
                                 <div class="item-name">安全等级</div>
@@ -67,24 +57,25 @@
                             </div>
                             <div class="clear"></div>
                         </div>
-                    </li>
+                    </li>-->
                     <li>
                         <div class="security-item clearfix">
-                            <div class="col-xs-1">
+                            <!--<div class="col-xs-1">
                                 <div class="item-icon">
                                     <i class="iconfont  fa fa-warning" 
                                     r-class="'icon-close': !isSettingTrueNameVerified, 'fa-warning': !isSettingTrueNameVerified,
                                         'icon-open': isSettingTrueNameVerified, 'fa-check-circle': isSettingTrueNameVerified"></i>
                                 </div>
-                            </div>
-                            <div class="col-xs-2">
+                            </div>-->
+                            <div class="col-xs-2 col-xs-offset-1">
                                 <div class="item-name">实名认证</div>
                             </div>
                             <div class="col-xs-6">
                                 <div class="item-text">
-                                    <span r-class="'text-red': !isSettingTrueNameVerified">
+                                    <!--<span r-class="'text-red': !isSettingTrueNameVerified">
                                         {isSettingTrueNameVerified ? '你已经通过实名认证' : '你尚未实名认证'}
-                                    </span>
+                                    </span>-->
+                                    实名认证是为了账号的安全考虑
                                 </div>
                             </div>
                             <div class="col-xs-2">
@@ -97,23 +88,23 @@
                     </li>
                     <li>
                         <div class="security-item clearfix">
-                            <div class="col-xs-1">
+                            <!--<div class="col-xs-1">
                                 <div class="item-icon">
                                     <i class="iconfont  fa fa-warning" 
                                     r-class="'icon-close': !isSettingTradingPassword, 'fa-warning': !isSettingTradingPassword,
                                         'icon-open': isSettingTradingPassword, 'fa-check-circle': isSettingTradingPassword"></i>
                                 </div>
-                            </div>
-                            <div class="col-xs-2"><div class="item-name">交易密码</div></div>
+                            </div>-->
+                            <div class="col-xs-2 col-xs-offset-1"><div class="item-name">提现密码</div></div>
                             <div class="col-xs-6">
                                 <div class="item-text">
-                                    <span r-class="'text-red': !isSettingTradingPassword">在使用账户提款时，均需通过交易密码进行身份验证，请牢记安全密码</span>
+                                    <span r-class="'text-red': !isSettingTradingPassword">在使用账户提款时，均需通过提现密码进行身份验证，请牢记安全密码</span>
                                 </div>
                             </div>
                             <div class="col-xs-2">
                                 <div class="item-action">
                                     <a href="#/user/actPayPassword">
-                                        {isSettingTradingPassword ? '修改交易密码' : '设置交易密码'}
+                                        {isSettingTradingPassword ? '修改提现密码' : '设置提现密码'}
                                     </a>
                                 </div>
                             </div>
@@ -122,12 +113,12 @@
                     </li>
                     <li>
                         <div class="security-item clearfix">
-                            <div class="col-xs-1">
+                            <!--<div class="col-xs-1">
                                 <div class="item-icon">
                                     <i class="iconfont icon-open fa fa-check-circle"></i>
                                 </div>
-                            </div>
-                            <div class="col-xs-2">
+                            </div>-->
+                            <div class="col-xs-2 col-xs-offset-1">
                                 <div class="item-name">登录密码</div>
                             </div>
                             <div class="col-xs-6">
@@ -143,16 +134,16 @@
                             <div class="clear"></div>
                         </div>
                     </li>
-                    <li>
+                    <li class="last">
                         <div class="security-item clearfix">
-                            <div class="col-xs-1">
+                            <!--<div class="col-xs-1">
                                 <div class="item-icon"><i class="iconfont icon-open fa fa-check-circle"></i></div>
-                            </div>
-                            <div class="col-xs-2">
+                            </div>-->
+                            <div class="col-xs-2 col-xs-offset-1">
                                 <div class="item-name">绑定手机</div>
                             </div>
                             <div class="col-xs-6">
-                                <div class="item-text">您的邮箱已绑定：{phone}</div>
+                                <div class="item-text">您的手机已绑定：{phone}</div>
                             </div>
                             <div class="col-xs-2">
                                 <div class="item-action">
@@ -162,7 +153,7 @@
                             <div class="clear"></div>
                         </div>
                     </li>
-                    <li class="last">
+                    <!--<li class="last">
                         <div class="security-item clearfix">
                             <div class="col-xs-1">
                                 <div class="item-icon"><i class="iconfont icon-open fa fa-check-circle"></i></div>
@@ -178,14 +169,14 @@
                             </div>
                             <div class="clear"></div>
                         </div>
-                    </li>
+                    </li>-->
                 </ul>
             </div>
         </div>
     </headerTemp>
 </template>
 <script>
-    import userService from "../../service/userService.js"
+    import {getMoneyMax} from "../../service/userService.js";
 
     export default {
         data: {
@@ -202,18 +193,13 @@
         },
         init() {
             var self = this;
-            userService.getIndexInfo((data)=>{
-                var safeLever = 60 + (data.isSettingTrueNameVerified? 20:0) + (data.isSettingTradingPassword? 20:0)
+            self.$update({
+                phone: getWebTel(),
+                loginTime: getWebLastLoginTime()
+            });
+            getMoneyMax((data)=>{
                 self.$update({
-                    safeLever: safeLever,
-                    countMoney: data.countMoney,
-                    money: data.money,
-                    tMoney: data.tMoney,
-                    loginTime: data.loginTime,
-                    isSettingTrueNameVerified: data.isSettingTrueNameVerified,
-                    isSettingTradingPassword: data.isSettingTradingPassword,
-                    email: data.email,
-                    phone: data.phone
+                    money: data.money
                 });
             });
         },

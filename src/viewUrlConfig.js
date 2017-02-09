@@ -203,7 +203,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 交易密码设置"
+        title: name + " - 提现密码设置"
       }
     },
     "user.actMobile": {
@@ -275,7 +275,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.index": {
@@ -285,7 +285,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.cardType": {
@@ -295,7 +295,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.order": {
@@ -305,7 +305,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.user": {
@@ -315,7 +315,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.bankCardType": {
@@ -325,7 +325,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.tx": {
@@ -335,7 +335,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.sUser": {
@@ -345,7 +345,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.fees": {
@@ -355,7 +355,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.info": {
@@ -365,7 +365,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.introduction": {
@@ -375,7 +375,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.disclaimer": {
@@ -385,7 +385,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.contctus": {
@@ -395,7 +395,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.cooperation": {
@@ -405,7 +405,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.agreement": {
@@ -415,7 +415,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     },
     "supervise.faq": {
@@ -425,7 +425,7 @@ export default function(name) {
         });
       },
       config: {
-        title: name + " - 联系我们"
+        title: name
       }
     }
   }

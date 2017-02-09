@@ -9,18 +9,18 @@
                     </li>
                     <li class="last">
                         <div class="security-item clearfix">
-                            <div class="pull-left pt5">
-                                <div class="item-name">当前API状态（<span class="text-red">停止</span><span class="text-success">启动</span>）</div>
+                            <div class="pull-left">
+                                <div class="item-name pt5">当前API状态（<span class="text-red" r-hide={isStart}>停止</span><span class="text-success" r-hide={!isStart}>启动</span>）</div>
                             </div>
                             <div class="pull-left pl10">
-                                <a class="btn btn-default btn-block" style="width: 30px" onclick="getcode(this,'set','mobile');">停用</a>
-                                <a class="btn btn-success btn-block" style="width: 30px" onclick="getcode(this,'set','mobile');">启动</a>
+                                <a class="btn btn-default" style="width: 30px" r-hide={!isStart} on-click={this.stopAPI()}>停用</a>
+                                <a class="btn btn-success" style="width: 30px" r-hide={isStart} on-click={this.startAPI()}>启动</a>
                             </div>
                             <div class="pull-left pt5 pl50">
                                 <div class="item-name">如密钥被泄漏，请立即重置</div>
                             </div>
                             <div class="pull-left pl10">
-                                <a class="btn btn-default btn-block" style="width: 30px" onclick="getcode(this,'set','mobile');">重置</a>
+                                <a class="btn btn-default" style="width: 30px" on-click={this.resetAPI()}>重置</a>
                             </div>
                             <div class="clear"></div>
                         </div>
@@ -32,24 +32,10 @@
                     <li>
                         <div class="security-item clearfix">
                             <div class="col-xs-offset-1 col-xs-2">
-                                <div class="item-name pt5">回调地址：</div>
-                            </div>
-                            <div class="col-xs-4">
-                                <input class="form-control" id="newpsw" name="newpsw" type="password" value="" maxlength="20" null="">
-                            </div>
-                            <div class="col-xs-4">
-                                <a class="btn btn-primary btn-block ml10" style="width: 30px" onclick="getcode(this,'set','mobile');">确定</a>
-                            </div>
-                            <div class="clear"></div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="security-item clearfix">
-                            <div class="col-xs-offset-1 col-xs-2">
                                 <div class="item-name">商户ID：</div>
                             </div>
                             <div class="col-xs-6">
-                                <div class="item-text">5451451</div>
+                                <div class="item-text">{id}</div>
                             </div>
                             <div class="clear"></div>
                         </div>
@@ -60,7 +46,8 @@
                                 <div class="item-name pt5">商户密钥：</div>
                             </div>
                             <div class="col-xs-6">
-                                <a class="btn btn-primary btn-block" style="width: 80px" onclick="getcode(this,'set','mobile');">点击查看</a>
+                                {#if isShowSecretKey}<span class="pt5">{secretKey}</span>{/if}
+                                {#if !isShowSecretKey}<a class="btn btn-primary btn-block" style="width: 80px" on-click={isShowSecretKey = true}>点击查看</a>{/if}
                             </div>
                             <div class="clear"></div>
                         </div>
@@ -71,7 +58,56 @@
     </headerTemp>
 </template>
 <script>
+    import {getInfo, editCallbackUrl, startAPI, stopAPI, resetAPI} from "../../service/apiService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
+        init() {
+            getInfo((data)=>{
+                this.$update(data);
+            });
+        },
+        data: {
+            isStart: false,
+            callbackUrl: "",
+            id: '',
+            secretKey: "",
+            isShowSecretKey: false
+        },
+        startAPI() {
+            startAPI(()=>{
+                this.$update("isStart", true);
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        stopAPI() {
+            stopAPI(()=>{
+                this.$update("isStart", false);
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        resetAPI() {
+            var self = this;
+            resetAPI((data)=>{
+                self.$update({
+                    id: data.id,
+                    secretKey: data.secretKey
+                });
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        editCallbackUrl() {
+            editCallbackUrl({
+                url: this.data.callbackUrl
+            }, (msg)=>{
+                gritter(msg).success();
+            },(msg)=>{
+                gritter(msg).warning();
+            });
+        },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl")
         }

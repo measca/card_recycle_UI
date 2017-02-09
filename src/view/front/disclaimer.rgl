@@ -11,25 +11,24 @@
         <div class="bgwhite pt50 pb30">
             <div class="container">
                 <context showIndex="1">
-                    <div r-html={showVal}></div>
+                    <div r-html={context}></div>
                 </context>
             </div>
         </div>
     </frontTemp>
 </template>
 <script>
-    import webInfoService from "../../service/webInfoService.js";
+    import {declareQuery} from "../../service/contentService.js";
 
     export default {
         data: {
-            showVal: ""
+            context: '<p></p>'
         },
         init() {
             var self = this;
-            webInfoService.getDisclaimer((data)=>{
-                self.$update({
-                    showVal: data
-                });
+            self.$update("context", '<p></p>');
+            declareQuery(function (data) {
+                if(data) self.$update("context", data);
             });
         },
         components: {

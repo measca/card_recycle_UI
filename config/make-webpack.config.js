@@ -41,7 +41,7 @@ module.exports = (debug) => {
     filename: "index.html",
     chunksSortMode: "dependency",
     inject: 'body',
-    chunks: ['compatibleIE', 'vender', 'baseResource']
+    chunks: ['compatibleIE', 'vender', "../config", 'baseResource']
   })];
 
   // 没有真正引用也会加载到runtime，如果没安装这些模块会导致报错，有点坑
@@ -100,19 +100,22 @@ module.exports = (debug) => {
     entry: Object.assign(entries, {
       'vender': ['jquery', 'regularjs'],
       "compatibleIE": ["es5-shim/es5-shim.js", "es5-shim/es5-sham.js"], // 兼容IE8
+      "../config": webConfig,
       "baseResource": [baseController, routerConfig, baseStyle]
     }),
     output: {
       path: assets,
-      filename: debug ? 'controller/[name].js' : 'controller/[chunkhash:8].[name].min.js',
+      filename: debug ? 'controller/[name].js' : 'controller/[name].min.js',
       chunkFilename: debug ? 'controller/[chunkhash:8].chunk.js' : 'controller/[chunkhash:8].chunk.min.js',
       hotUpdateChunkFilename: debug ? 'controller/[id].js' : 'controller/[id].[chunkhash:8].min.js',
       publicPath: publicPath
     },
-
+    externals: {
+      "web.config": "window['web.config']",
+    },
     resolve: {
       root: [srcDir, nodeModPath],
-      alias: Object.assign({ "web.config": webConfig }, pathMap),
+      alias: Object.assign({ /* "web.config": webConfig */ }, pathMap),
       extensions: ['', '.js']
     },
 
@@ -151,7 +154,7 @@ module.exports = (debug) => {
     },
     plugins: [
       new CommonsChunkPlugin({
-        names: ['baseResource', 'vender', 'compatibleIE']
+        names: ['baseResource', "../config", 'vender', 'compatibleIE']
       })
     ].concat(plugins),
 
@@ -175,7 +178,7 @@ module.exports = (debug) => {
         if (!Array.isArray(entry[key])) {
           entry[key] = Array.of(entry[key])
         }
-        entry[key].push('webpack-hot-middleware/client?reload=true&quiet=true')
+        // entry[key].push('webpack-hot-middleware/client?reload=true&quiet=true')
       }
     })(config.entry)
 

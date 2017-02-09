@@ -6,10 +6,10 @@
                     收款账号
                     <a class="btn btn-default pull-right ml5" href="#/user/bankCardAdd">新增收款账号</a>
                 </h3>
-                <div class="box">
+                <div class="box" r-hide={cards.length > 0}>
                     <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
                 </div>
-                <table class="table trade-records">
+                <table class="table trade-records" r-hide={cards.length <= 0}>
                     <thead>
                         <tr>
                             <th>银行</th>
@@ -21,12 +21,12 @@
                     <tbody>
                         {#list cards as card}
                         <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
+                            <td>{card.bankName}</td>
+                            <td>{card.cardNum}</td>
+                            <td>{card.name}</td>
                             <td>
-                                <a class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showModal()}><i class="fa fa-pencil"></i></a>
-                                <a class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
+                                <a class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEditModal(card)}><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del(card.id)}><i class="fa fa-times-circle"></i></a>
                             </td>
                         </tr>
                         {/list}
@@ -40,9 +40,8 @@
                     <div class="col-xs-2 col-xs-offset-2">
                         <label class="control-label">收款姓名：</label>
                     </div>
-                    <div class="col-xs-6">
-                        Bless
-                    </div>
+                    <div class="col-xs-6"><input type="text" class="form-control" maxlength="5"  r-model="editModel.accountName"></div>
+                    <div r-hide={$validation.accountName.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.accountName.msg}</div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">
@@ -50,12 +49,14 @@
                         <label class="control-label pt5">收款银行：</label>
                     </div>
                     <div class="col-xs-6">
-                        <select class="form-control" r-model="editModel.state">
+                        <select class="form-control" r-model="editModel.bankId">
                             <option value="">请选择收款银行</option>
-                            <option value="95255255565522">96525266****565445</option>
+                            {#list bankList as bank}
+                            <option value="{bank.id}">{bank.name}</option>
+                            {/list}
                         </select>
                     </div>
-                    <div r-hide={$validation.state.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.state.msg}</div>
+                    <div r-hide={$validation.bankId.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.bankId.msg}</div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">
@@ -63,14 +64,14 @@
                         <label class="control-label pt5">收款账号：</label>
                     </div>
                     <div class="col-xs-6">
-                        <input type="text" class="form-control" maxlength="20"  r-model="editModel.access">
+                        <input type="text" class="form-control" maxlength="30"  r-model="editModel.account">
                     </div>
-                    <div r-hide={$validation.access.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.access.msg}</div>
+                    <div r-hide={$validation.account.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.account.msg}</div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">
                     <div class="col-xs-4 col-xs-offset-4">
-                        <input type="submit" class="btn btn-primary btn-block" value="提交">
+                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.edit()}>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -79,41 +80,105 @@
     </headerTemp>
 </template>
 <script>
-
     import confirm from "../../tool/confirm/index.js";
+    import {getAll, del, getBankListAtUser, edit} from "../../service/bankCardService.js";
+    import gritter from "../../tool/gritter/gritter.js";
 
     export default {
+        init() {
+            this.resetData();
+            var self = this;
+            getBankListAtUser((banks)=>{
+                self.$update("bankList", banks);
+            });
+        },
         data: {
-            cards: ["1", "2", "3"],
+            cards: [],
             editModel: {
-                state: "",
-                access: ""
-            }
+                id: 0,
+                bankId: "",
+                accountName: "",
+                account: "",
+                name: ''
+            },
+            bankList: []
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl"),
             "modal": require("../../control/modal/index.rgl")
         },
-        showModal() {
+        showEditModal(card) {
+            this.$update({
+                editModel: {
+                    id: card.id,
+                    bankId: card.bankId,
+                    accountName: card.name,
+                    account: card.cardNum,
+                    card: card
+                }
+            });
             this.$refs.editModal.show();
         },
-        del() {
+        del(id) {
+            var self = this;
             confirm.ajax("是否删除该条数据？",()=> {
-                setTimeout(function() {
+                del({id: id}, (msg)=>{
                     confirm.alert("删除成功");
-                }, 3000);
+                    var arr = [];
+                    for(var i = 0, d; d = self.data.cards[i++];) {
+                        if(d.id != id) {
+                            arr.push(d);
+                        }
+                    }
+                    self.$update("cards", arr);
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        edit() {
+            var self = this;
+            var bankName = "";
+            for(var i=0,d; d = this.data.bankList[i++];) {
+                if(d.id == this.data.editModel.bankId) {
+                    bankName = d.name;
+                }
+            }
+            edit({
+                id: this.data.editModel.id,
+                bankId: this.data.editModel.bankId,
+                account: this.data.editModel.account,
+                accountName: this.data.editModel.accountName,
+                bankName: bankName
+            }, ()=>{
+                self.$refs.editModal.hidden();
+                self.data.editModel.card.bankId = this.data.editModel.bankId;
+                self.data.editModel.card.bankName = bankName;
+                self.data.editModel.card.name = this.data.editModel.accountName;
+                self.data.editModel.card.cardNum = this.data.editModel.account;
+                self.$update();
+            }, (msg)=>{
+                gritter(msg).warning();
+            });
+        },
+        resetData(){
+            var self = this;
+            getAll((datas)=>{
+                self.$update("cards", datas);
             });
         },
         validation: {
             baseAttrName: "editModel",
             model: {
-                state: {
+                bankId: {
                     required: true,
                 },
-                access: {
+                account: {
                     required: true,
-                    alphaDash: true,
-                    minlength: 7
+                    alphaDash: true
+                },
+                accountName: {
+                    required: true,
                 }
             }
         }

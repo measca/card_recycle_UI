@@ -111,11 +111,25 @@
           color: #fff;
           background-color: #428bca;
           border-color: #357ebd;
+          position: relative;
 
           &:hover,&:focus, &:active {
             color: #fff;
             background-color: #3276b1;
             border-color: #285e8e;
+          }
+
+          > input {
+            position: absolute;
+            font-size: 15px;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            filter:alpha(opacity=0); /* IE */
+            -moz-opacity:0; /* Moz + FF */
+            opacity: 0; /* 支持CSS3的浏览器（FF 1.5也支持）*/
           }
         }
 
@@ -152,19 +166,6 @@
           filter:alpha(opacity=30); /* IE */
           -moz-opacity:0.3; /* Moz + FF */
           opacity: 0.3; /* 支持CSS3的浏览器（FF 1.5也支持）*/
-        }
-
-        .upload-file-action {
-          position: absolute;
-          font-size: 15px;
-          overflow: hidden;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          filter:alpha(opacity=0); /* IE */
-          -moz-opacity:0; /* Moz + FF */
-          opacity: 0; /* 支持CSS3的浏览器（FF 1.5也支持）*/
         }
       }
     }

@@ -6,30 +6,24 @@
                     <a class="btn btn-default pull-right ml5" href="#/user/index">返回个人中心</a>
                     实名认证
                 </h3>
-                <div class="box">
+                {#if isShow}
+                <div class="box" r-hide={isSub}>
                     <div class="py50">
-                        <div class="alert">
-                            <p><strong>提示：</strong>一旦通过将不可修改，请输入正确的数据，避免造成不必要的损失。</p>
-                        </div>
-                        <form action="/account/act_password" method="post" id="newpass">
-                            <div class="form-group">
+                        <form onsubmit="return false;">
+                            <!--<div class="form-group">
                                 <div class="col-xs-2">
                                     <label class="control-label">手机：</label>
                                 </div>
-                                <div class="col-xs-4">
-                                    15800000000
-                                </div>
+                                <div class="col-xs-4">{phone}</div>
                                 <div class="clear"></div>
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-2">
                                     <label class="control-label">邮箱：</label>
                                 </div>
-                                <div class="col-xs-4">
-                                    measca@qq.com
-                                </div>
+                                <div class="col-xs-4">{email}</div>
                                 <div class="clear"></div>
-                            </div>
+                            </div>-->
                             <div class="form-group">
                                 <div class="col-xs-2">
                                     <label class="control-label">姓名：</label>
@@ -56,25 +50,82 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-4 col-xs-offset-2">
-                                    <input class="btn btn-primary btn-block" type="submit"value="提交">
+                                    <input class="btn btn-primary btn-block" type="submit"value="提交" {#if !($validation.$isPass)}disabled{/if} on-click={this.trueNameVerified()}>
                                 </div>
                                 <div class="clear"></div>
                             </div>
                         </form>
                     </div>
                 </div>
+                {/if}
+                <div class="box" r-hide={!isSub}>
+                    <div class="nodata">
+                        <i class="iconfont fa fa-check text-success"></i><br>
+                        操作成功<br>
+                        <p class="mt20">
+                            <a class="btn btn-default btn-sm ml10" href="#/user/index">返回首页</a>
+                        </p>
+                    </div>
+                </div>
+                {#if isTrueNameVerified}
+                <div class="box">
+                    <div class="nodata">
+                        <i class="iconfont fa fa-check text-success"></i><br>
+                        你已通过实名认证<br>
+                        <p class="mt20">
+                            <a class="btn btn-default btn-sm ml10" href="#/user/index">返回首页</a>
+                        </p>
+                    </div>
+                </div>
+                {/if}
             </div>
         </div>
     </headerTemp>
 </template>
 <script>
+    import {isTrueNameVerified, getEmailAndPhone, trueNameVerified} from "../../service/userService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
+        init() {
+            var self = this;
+            // isTrueNameVerified(()=>{
+            //     self.$update("isTrueNameVerified", true);
+            // },()=>{
+            //     self.$update({
+            //         isTrueNameVerified: false,
+            //         isShow: true
+            //     });
+            // });
+            // getEmailAndPhone((data)=>{
+            //     self.$update({
+            //         phone: data.phone,
+            //         email: data.email
+            //     });
+            // });
+        },
         data: {
+            isTrueNameVerified: false,
+            isShow: true,
+            phone: "",
+            email: '',
             name: "",
-            id: ""
+            id: "",
+            isSub: false
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl")
+        },
+        trueNameVerified() {
+            var self = this;
+            trueNameVerified({
+                name: this.data.name,
+                id: this.data.id
+            }, ()=>{
+                self.$update("isSub", true);
+            },(msg)=>{
+                gritter(msg).warning();
+            });
         },
         validation: {
             model: {

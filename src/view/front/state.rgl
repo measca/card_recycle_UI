@@ -10,37 +10,76 @@
         </div>
         <div class="bgwhite pt50 pb30">
             <div class="container">
-                <ul class="cards-group clearfix">
-                    {#list cards as card}
-                    <li>
-                        <a title="{card.title}">
-                            <img src="{card.img}" title="{card.title}">
-                            <span class="title">{card.title}</span>
-                            <a target="_blank" href="{card.url}" class="go">查询</a>
-                        </a>
-                    </li>
-                    {/list}
-                </ul>
+                <table class="table trade-records">
+                    <thead>
+                        <tr>
+                            <th>卡种</th>
+                            <th>官方余额查询地址</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>神州行充值卡</td>
+                            <td><a href="http://www.sc.10086.cn/service/product/CZKXXCX.shtml" target="__bark">http://www.sc.10086.cn/service/product/CZKXXCX.shtml</a></td>
+                        </tr>
+                        <tr>
+                            <td>联通充值卡</td>
+                            <td><a href="http://iservice.10010.com/oftenInfo.html?menuId=000400010004" target="__bark">http://iservice.10010.com/oftenInfo.html?menuId=000400010004</a></td>
+                        </tr>
+                        <tr>
+                            <td>电信充值卡</td>
+                            <td><a href="http://service.sh.189.cn/service/card/cardBalance" target="__bark">http://service.sh.189.cn/service/card/cardBalance</a></td>
+                        </tr>
+                        <tr>
+                            <td>盛大一卡通</td>
+                            <td><a href="https://pay.sdo.com/Deposit/CardBalance.aspx" target="__bark">https://pay.sdo.com/Deposit/CardBalance.aspx</a></td>
+                        </tr>
+                        <tr>
+                            <td>骏网一卡通</td>
+                            <td><a href="http://www.jcard.cn/Bill/TradeSearch.aspx" target="__bark">http://www.jcard.cn/Bill/TradeSearch.aspx</a></td>
+                        </tr>
+                        <tr>
+                            <td>搜狐一卡通</td>
+                            <td><a href="http://account.changyou.com/_login.jsp" target="__bark">http://account.changyou.com/_login.jsp</a></td>
+                        </tr>
+                        <tr>
+                            <td>网易一卡通</td>
+                            <td><a href="http://ecard.163.com/script/sn_trans/check_show" target="__bark">http://ecard.163.com/script/sn_trans/check_show</a></td>
+                        </tr>
+                        <tr>
+                            <td>完美一卡通</td>
+                            <td><a href="http://pay.wanmei.com/new/query/queryCard.jsp" target="__bark">http://pay.wanmei.com/new/query/queryCard.jsp</a></td>
+                        </tr>
+                        <tr>
+                            <td>盛付通</td>
+                            <td><a href="http://www.801335.com/status/index.htm" target="__bark">http://www.801335.com/status/index.htm</a></td>
+                        </tr>
+                        <tr>
+                            <td>征途一卡通</td>
+                            <td><a href="http://pay.ztgame.com/m.php?type=query_card" target="__bark">http://pay.ztgame.com/m.php?type=query_card</a></td>
+                        </tr>
+                        <tr>
+                            <td>久游一卡通</td>
+                            <td><a href="http://pay.9you.com/" target="__bark">http://pay.9you.com/</a></td>
+                        </tr>
+                        <tr>
+                            <td>Q币一卡通</td>
+                            <td><a href="http://pay.qq.com/account/account_qqcard_query.shtml" target="__bark">http://pay.qq.com/account/account_qqcard_query.shtml</a></td>
+                        </tr>
+                        <tr>
+                            <td>纵游一卡通</td>
+                            <td><a href="http://www.6186.com/SearchCard.aspx" target="__bark">http://www.6186.com/SearchCard.aspx</a></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="clear"></div>
             </div>
         </div>
     </frontTemp>
 </template>
 <script>
-    import cardService from "../../service/cardService.js";
 
     export default {
-        data: {
-            cards: []
-        },
-        init() {
-            var self = this;
-            cardService.getAll((datas)=>{
-                self.$update({
-                    cards: datas
-                });
-            });
-        },
         components: {
             "frontTemp": require("../../component/frontTemplate/front.rgl")
         }

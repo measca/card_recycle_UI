@@ -3,7 +3,7 @@
         <div class="view-framework-main">
             <h3 class="clearfix">
                 提现管理
-                <a class="btn btn-primary pull-right ml5" href="#/user/index">查询</a>
+                <a class="btn btn-primary pull-right ml5" on-click={this.queryList()}>查询</a>
                 <select class="form-control pull-right" style="width: 100px" r-model="query.state">
                     <option value="">全部记录</option>
                     <option value="0">未转账</option>
@@ -11,58 +11,50 @@
                     <option value="2">失败</option>
                 </select>
                 <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">处理状态：</span>
-                <input class="form-control pull-right" style="width: 150px;">
+                <input class="form-control pull-right" style="width: 150px;" r-model="query.account" maxlength="30">
                 <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">商户账户：</span>
             </h3>
-            <div class="box">
+            <div class="box" r-hide={tableData.datas.length > 0}>
                 <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
             </div>
-            <table class="table trade-records">
+            <table class="table trade-records" r-hide={tableData.datas.length <= 0}>
                 <thead>
                     <tr>
-                        <th>商户帐号</th>
+                        <!--<th>商户id</th>-->
+                        <th>商户账号</th>
                         <th>提现金额（元）</th>
                         <th>商户余额（元）</th>
                         <th>处理状态</th>
-                        <th>处理结果</th>
                         <th>处理时间</th>
-                        <th>商户银行账户</th>
+                        <th>商户银行账号</th>
                         <th>银行账户者姓名</th>
                         <th style="width: 80px">操作</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {#list tableData.datas as d}
                     <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
+                        <!--<td>{d.businessId}</td>-->
+                        <td>{d.account}</td>
+                        <td>{d.withdrawAmount}</td>
+                        <td>{d.balance}</td>
+                        <td>{#if d.processStatus == 0}未转账{/if}{#if d.processStatus == 1}已转账{/if}{#if d.processStatus == 2}失败{/if}</td>
+                        <td>{d.processTime}</td>
+                        <td>{d.cardNum}</td>
+                        <td>{d.name}</td>
                         <td>
+                            {#if d.processStatus == 0}
+                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="处理提款" on-click={this.show(d)}><i class="fa fa-credit-card"></i></a>
+                            {/if}
                         </td>
                     </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="处理提款" on-click={this.show()}><i class="fa fa-credit-card"></i></a>
-                        </td>
-                    </tr>
+                    {/list}
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="9">
                             <div class="pull-right">
-                                <page totalItems={200}></page>
+                                <page totalItems={tableData.pageCount} perPages={tableData.pageNum} currentPage={tableData.pageIndex}></page>
                             </div>
                             <div class="clear"></div>
                         </td>
@@ -71,13 +63,13 @@
             </table>
         </div>
         <modal ref="modal" title="处理提款请求">
-            <form class="pt20 pb10">
+            <form class="pt20 pb10" onsubmit="return false;">
                 <div class="form-group">
                     <div class="col-xs-4 text-right">
                         <label class="control-label pr10">商户帐号：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">----</div>
+                        <div class="mr4">{sendData.txData.account}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -86,7 +78,7 @@
                         <label class="control-label pr10">提现金额（元）：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">----</div>
+                        <div class="mr4">{sendData.txData.withdrawAmount}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -95,7 +87,7 @@
                         <label class="control-label pr10">商户银行账户：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">----</div>
+                        <div class="mr4">{sendData.txData.cardNum}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -104,7 +96,7 @@
                         <label class="control-label pr10">银行账户者姓名：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">----</div>
+                        <div class="mr4">{sendData.txData.name}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -114,13 +106,26 @@
                         <label class="control-label pt5 pr10">处理状态：</label>
                     </div>
                     <div class="col-xs-5">
-                        <div class="mr4">
-                            <select type="text" class="form-control" maxlength="20">
-                                <option>请选择处理状态</option>
-                                <option>已转账</option>
-                                <option>失败</option>
-                            </select>
-                        </div>
+                        <select type="text" class="form-control" maxlength="20" r-model="sendData.state">
+                            <option value="">请选择处理状态</option>
+                            <option value="1">已转账</option>
+                            <option value="2">失败</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-5 col-xs-offset-4 text-red" r-hide={$validation.state.isPass}>
+                        {$validation.state.msg}
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-4 text-right">
+                        <label class="control-label pt5 pr10">收取的手续费：</label>
+                    </div>
+                    <div class="col-xs-5">
+                        <input type="text" class="form-control" maxlength="20" r-model="sendData.money">
+                    </div>
+                    <div class="col-xs-5 col-xs-offset-4 text-red" r-hide={$validation.money.isPass}>
+                        {$validation.money.msg}
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -130,14 +135,14 @@
                     </div>
                     <div class="col-xs-5">
                         <div class="mr4">
-                            <textarea class="form-control" rows="5"></textarea>
+                            <textarea class="form-control" rows="5" r-model="sendData.msg"></textarea>
                         </div>
                     </div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">
                     <div class="col-xs-5 col-xs-offset-4">
-                        <input type="submit" class="btn btn-primary btn-block" value="提交">
+                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.sendProcess()}>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -146,14 +151,30 @@
     </div>
 </template>
 <script>
+    import {drawingListAtAdmin, processDrawing} from "../../service/moneyService.js";
+    import gritter from "../../tool/gritter/gritter.js";
+
     export default {
         data: {
             query: {
-                state: ""
+                state: "",
+                account: ""
+            },
+            tableData: {
+                query: {
+                    state: "",
+                    account: ""
+                },
+                pageCount: 0,
+                pageNum: 15,
+                pageIndex: 1,
+                datas: []
             },
             sendData: {
+                txData: {},
                 state: "",
-                mesg: ""
+                money: "",
+                msg: ""
             }
         },
         enter: function(option){
@@ -161,19 +182,91 @@
                 this.$update(k, option.param[k]);
             }
             this.$update();
+            this.$watch("tableData.pageIndex", function(nVal, oVal) {
+                this.getList();
+            });
+        },
+        init() {
+            this.$update({
+                query: {
+                    state: "",
+                    account: ""
+                },
+                tableData: {
+                    query: {
+                        state: "",
+                        account: ""
+                    },
+                    pageCount: 0,
+                    pageNum: 15,
+                    pageIndex: 1,
+                    datas: []
+                },
+                sendData: {
+                    txData: {},
+                    state: "",
+                    money: "",
+                    msg: ""
+                }
+            });
         },
         components: {
             page: require("../../control/page/index.rgl"),
             modal: require("../../control/modal/index.rgl")
         },
-        show() {
+        show(d) {
+            this.$update("sendData", {
+                txData: d,
+                state: "",
+                money: "",
+                msg: ""
+            });
             this.$refs.modal.show();
         },
+        sendProcess() {
+            var self = this;
+            processDrawing({
+                serviceCharge: this.data.sendData.money,
+                status: this.data.sendData.state,
+                processMsg: this.data.sendData.msg,
+                withdrawRecordId: this.data.sendData.txData.id,
+            }, function() {
+                self.data.sendData.txData.processStatus = self.data.sendData.state;
+                self.$refs.modal.hidden();
+                gritter("处理成功").success();
+                self.$update();
+            }, function(msg) {
+                gritter(msg).waring();
+            });
+        },
+        queryList() {
+            this.data.tableData.query.account = this.data.query.account;
+            this.data.tableData.query.state = this.data.query.state;
+            this.data.tableData.pageIndex = 1;
+            this.$update();
+            this.getList();
+        },
+        getList() {
+            var self = this;
+            drawingListAtAdmin({
+                account: self.data.tableData.query.account,
+                state: self.data.tableData.query.state,
+                pageIndex: self.data.tableData.pageIndex,
+                pageNum: self.data.tableData.pageNum
+            }, (data)=>{
+                self.data.tableData.pageCount = data.dataCount;
+                self.$update("tableData.datas", data.list);
+            });
+        },
         validation: {
-            baseAtteName: "sendData",
+            baseAttrName: "sendData",
             model: {
                 state: {
                     required: true
+                },
+                money: {
+                    required: true,
+                    decimal: true
                 }
             }
         }

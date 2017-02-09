@@ -72,46 +72,48 @@ function Validation(vm, baseAttrName, key, vList, mList, tempIsPassKey, isPassKe
     resolve();
   });
 }
-export var install = (Componenet) => {
+export var install = (Componenet, Regular) => {
   Componenet.implement({
-    events: {
-      $init: function(){
-        var validation = this.validation;
-        if(!validation) return;
-        var baseAttrName = validation.baseAttrName || "";
-        var message = validation.message || {};
-        var model = validation.model || {};
-        var $validation = {
-          $isPass: true // 全局是否通过
-        };
-        this.$update("$validation", $validation);
-        var vKeys = [];
-        for(var key in model) {
-          var vkey = "$validation." + key;
-          this.$update(vkey, {
-            isPass: true, // 当前对象是否通过验证
-            __isPass: true,
-            msg: "" // 错误的内容
-          });
-          var vList = model[key];
-          var mList = message[key];
-          var isPassKey = "$validation." + key + ".isPass";
-          var msgKey = "$validation." + key + ".msg";
-          var tempIsPassKey = "$validation." + key + ".__isPass";
-          var validation = new Validation(this, baseAttrName, key, vList, mList, tempIsPassKey, isPassKey, msgKey);
-          vKeys.push(tempIsPassKey);
-          this.$watch(tempIsPassKey, () => {
-            var state = true;
-            for(var i = 0, k; k = vKeys[i++];) {
-              if(!this.$get(k)) {
-                state = false;
-                break;
+    _handles: {
+      $init: [
+        function () {
+          var validation = this.validation;
+          if(!validation) return;
+          var baseAttrName = validation.baseAttrName || "";
+          var message = validation.message || {};
+          var model = validation.model || {};
+          var $validation = {
+            $isPass: true // 全局是否通过
+          };
+          this.$update("$validation", $validation);
+          var vKeys = [];
+          for(var key in model) {
+            var vkey = "$validation." + key;
+            this.$update(vkey, {
+              isPass: true, // 当前对象是否通过验证
+              __isPass: true,
+              msg: "" // 错误的内容
+            });
+            var vList = model[key];
+            var mList = message[key];
+            var isPassKey = "$validation." + key + ".isPass";
+            var msgKey = "$validation." + key + ".msg";
+            var tempIsPassKey = "$validation." + key + ".__isPass";
+            var validation = new Validation(this, baseAttrName, key, vList, mList, tempIsPassKey, isPassKey, msgKey);
+            vKeys.push(tempIsPassKey);
+            this.$watch(tempIsPassKey, () => {
+              var state = true;
+              for(var i = 0, k; k = vKeys[i++];) {
+                if(!this.$get(k)) {
+                  state = false;
+                  break;
+                }
               }
-            }
-            this.$update("$validation.$isPass", state);
-          });
+              this.$update("$validation.$isPass", state);
+            });
+          }
         }
-      }
+      ]
     }
   });
 }

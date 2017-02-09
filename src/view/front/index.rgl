@@ -2,7 +2,7 @@
     <frontTemp showIndex="0">
         <div class="content">
             <div class="masthead">
-                <div class="container masthead-jumbotron png"></div>
+                <div class="container masthead-jumbotron png" style="background: url('{indexTopImg}') 50% no-repeat"></div>
                 <div class="container masthead-feature png">
                     <ul class="feature-group clearfix">
                         <li>
@@ -33,7 +33,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="cardtype-panel pt50 pb50 bgwhite">
+            <!--<div class="cardtype-panel pt50 pb50 bgwhite">
                 <div class="container">
                     <div class="cards-caption mb30">
                         <h2>我们所涉及的业务</h2>
@@ -51,28 +51,26 @@
                     </ul>
                     <div class="clear"></div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </frontTemp>
 </template>
 <script>
-    import cardService from "../../service/cardService.js";
-
-    import webConfig from "web.config";
-
-    console.log(webConfig);
+    import {getAll} from "../../service/cardService.js";
+    import config from "web.config";
 
     export default {
         data: {
-            cards: []
+            cards: [],
+            indexTopImg: config.indexTopImg
         },
         init() {
             var self = this;
-            cardService.getAll((datas)=>{
-                self.$update({
-                    cards: datas
-                });
-            });
+            // getAll((datas)=>{
+            //     self.$update({
+            //         cards: datas
+            //     });
+            // });
         },
         components: {
             "frontTemp": require("../../component/frontTemplate/front.rgl")

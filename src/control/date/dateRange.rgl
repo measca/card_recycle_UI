@@ -14,7 +14,8 @@
           <i>({__Difference} 天)</i>
         </div>
         <div r-hide="start && end">请选择一个日期范围</div>
-        <input type="button" class="apply-btn" value="清除选择" on-click="{this.__ClearSelect()}">
+        <input type="button" class="apply-btn" value="清除选择" on-click="{this.__ClearSelect()}" style="right: 50px;">
+        <input type="button" class="apply-btn" value="关闭" on-click='{__IsOpen = !__IsOpen}'>
       </div>
       <div class="month-wrapper">
         <table cellspacing="0" border="0" cellpadding="0">
@@ -213,59 +214,57 @@
       data.__StartDate.showVal = formatDat(data.__StartDate.date, "yyyy年MM月");
       data.__EndDate.showVal = formatDat(data.__EndDate.date, "yyyy年MM月");
     },
-    events: {
-      $init() {
-        this.__InitDate(false);
-        this.__InitDate(true);
-        this.$watch("__StartDate.date", (newVal)=>{
-          this.data.__StartDate.showVal = formatDat(newVal, "yyyy年MM月");
-        });
-        this.$watch("__EndDate.date", (newVal)=>{
-          this.data.__EndDate.showVal = formatDat(newVal, "yyyy年MM月");
-        });
-        this.$watch("start", (newVal)=>{
-          var selectDate = this.data.__StartDate.selectDate;
-          var newDate = toDate(newVal);
-          if(newVal && (!selectDate || formatDat(newDate, "yyyy-MM-dd") != formatDat(selectDate, "yyyy-MM-dd"))) {
-            this.data.__StartDate.selectDate = this.data.__StartDate.date = newDate;
-            this.__InitDate(false);
-            this.__InitDate(true);
-          }
-          if(!this.data.__EndDate.selectDate && newVal) {
-            this.$update({start: ""})
-          }
-        });
-        this.$watch("end", (newVal)=>{
-          var selectDate = this.data.__EndDate.selectDate;
-          var newDate = toDate(newVal);
-          if(newVal && (!selectDate || formatDat(newDate, "yyyy-MM-dd") != formatDat(selectDate, "yyyy-MM-dd"))) {
-            this.data.__EndDate.selectDate = this.data.__EndDate.date = newDate;
-            this.__InitDate(false);
-            this.__InitDate(true);
-          }
-          if(!this.data.__StartDate.selectDate && newVal) {
-            this.$update({end: ""})
-          }
-        });
-        this.$watch("__StartDate.selectDate", (newVal)=>{
-          if(this.data.__EndDate.selectDate) {
-            this.data.end = formatDat(this.data.__EndDate.selectDate, "yyyy-MM-dd");
-          }
-          if(newVal) {
-            this.data.start = formatDat(newVal, "yyyy-MM-dd");
-          } else this.data.start = "";
-          this.data.__Difference = Math.ceil(Math.abs(newVal - this.data.__EndDate.selectDate) / 86400000);
-        });
-        this.$watch("__EndDate.selectDate", (newVal)=>{
-          if(this.data.__StartDate.selectDate) {
-            this.data.start = formatDat(this.data.__StartDate.selectDate, "yyyy-MM-dd");
-          }
-          if(newVal) {
-            this.data.end = formatDat(newVal, "yyyy-MM-dd");
-          } else this.data.end = "";
-          this.data.__Difference = Math.ceil(Math.abs(this.data.__StartDate.selectDate - newVal) / 86400000);
-        });
-      }
+    init() {
+      this.__InitDate(false);
+      this.__InitDate(true);
+      this.$watch("__StartDate.date", (newVal)=>{
+        this.data.__StartDate.showVal = formatDat(newVal, "yyyy年MM月");
+      });
+      this.$watch("__EndDate.date", (newVal)=>{
+        this.data.__EndDate.showVal = formatDat(newVal, "yyyy年MM月");
+      });
+      this.$watch("start", (newVal)=>{
+        var selectDate = this.data.__StartDate.selectDate;
+        var newDate = toDate(newVal);
+        if(newVal && (!selectDate || formatDat(newDate, "yyyy-MM-dd") != formatDat(selectDate, "yyyy-MM-dd"))) {
+          this.data.__StartDate.selectDate = this.data.__StartDate.date = newDate;
+          this.__InitDate(false);
+          this.__InitDate(true);
+        }
+        if(!this.data.__EndDate.selectDate && newVal) {
+          this.$update({start: ""})
+        }
+      });
+      this.$watch("end", (newVal)=>{
+        var selectDate = this.data.__EndDate.selectDate;
+        var newDate = toDate(newVal);
+        if(newVal && (!selectDate || formatDat(newDate, "yyyy-MM-dd") != formatDat(selectDate, "yyyy-MM-dd"))) {
+          this.data.__EndDate.selectDate = this.data.__EndDate.date = newDate;
+          this.__InitDate(false);
+          this.__InitDate(true);
+        }
+        if(!this.data.__StartDate.selectDate && newVal) {
+          this.$update({end: ""})
+        }
+      });
+      this.$watch("__StartDate.selectDate", (newVal)=>{
+        if(this.data.__EndDate.selectDate) {
+          this.data.end = formatDat(this.data.__EndDate.selectDate, "yyyy-MM-dd");
+        }
+        if(newVal) {
+          this.data.start = formatDat(newVal, "yyyy-MM-dd");
+        } else this.data.start = "";
+        this.data.__Difference = Math.ceil(Math.abs(newVal - this.data.__EndDate.selectDate) / 86400000);
+      });
+      this.$watch("__EndDate.selectDate", (newVal)=>{
+        if(this.data.__StartDate.selectDate) {
+          this.data.start = formatDat(this.data.__StartDate.selectDate, "yyyy-MM-dd");
+        }
+        if(newVal) {
+          this.data.end = formatDat(newVal, "yyyy-MM-dd");
+        } else this.data.end = "";
+        this.data.__Difference = Math.ceil(Math.abs(this.data.__StartDate.selectDate - newVal) / 86400000);
+      });
     },
     __ClearSelect() {
       this.data.__StartDate.selectDate = null;

@@ -4,25 +4,26 @@
             <div class="view-framework-main">
                 <h3 class="clearfix">
                     <a class="btn btn-default pull-right ml5" href="#/user/actSell">我要寄售</a>
-                    <a class="btn btn-primary pull-right ml5" href="#/user/index">查询</a>
+                    <a class="btn btn-primary pull-right ml5" on-click={this.queryList()}>查询</a>
                     <select class="form-control pull-right" style="width: 130px" r-model="query.state">
-                        <option>全部记录</option>
-                        <option>处理中</option>
-                        <option>处理成功</option>
-                        <option>处理失败</option>
+                        <option value="">全部记录</option>
+                        <option value="0">处理中</option>
+                        <option value="1">处理成功</option>
+                        <option value="2">处理失败</option>
                     </select>
                     <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">按状态查询：</span>
                     <dateRange style="width: 200px; float: right;" start={query.startTime} end={query.endTime}></dateRange>
                     <span class="pull-right pr5" style="font-size: 13px; padding-top: 8px">时间段：</span>
                     订单查询
                 </h3>
-                <div class="box">
+                <div class="box" r-hide={tableData.datas.length > 0}>
                     <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
                 </div>
-                <table class="table trade-records">
+                <table class="table trade-records" r-hide={tableData.datas.length <= 0}>
                     <thead>
                         <tr>
                             <th>提交时间</th>
+                            <th>详细消息</th>
                             <th>订单号</th>
                             <th>充值卡类型</th>
                             <th>卡面值</th>
@@ -30,27 +31,24 @@
                             <th>状态</th>
                             <th>成功金额</th>
                             <th>处理时间</th>
-                            <th>价款金额</th>
                             <th>寄售比例</th>
                             <th>完成时间</th>
-                            <th>交易返回</th>
                         </tr>
                     </thead>
                     <tbody>
                         {#list tableData.datas as d}
                         <tr>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
+                            <td>{d.orderTime}</td>
+                            <td><a r-tooltip={d.thirdMsg}>查看详细</a></td>
+                            <td>{d.orderNum}</td>
+                            <td>{d.cardTypeName}</td>
+                            <td>{d.cardAmount}</td>
+                            <td>{d.cardNum}</td>
+                            <td>{#if d.orderStatus == 0}处理中{/if}{#if d.orderStatus == 1}处理成功{/if}{#if d.orderStatus == 2}处理失败{/if}</td>
+                            <td>{d.actualAmount}</td>
+                            <td>{d.processTime}</td>
+                            <td>{d.saleRatio}%</td>
+                            <td>{d.completeTime}</td>
                         </tr>
                         {/list}
                     </tbody>
@@ -58,7 +56,7 @@
                         <tr>
                             <td colspan="12">
                                 <div class="pull-right">
-                                    <page totalItems={200}></page>
+                                    <page totalItems={tableData.pageCount} perPages={tableData.pageNum} currentPage={tableData.pageIndex}></page>
                                 </div>
                                 <div class="clear"></div>
                             </td>
@@ -70,6 +68,8 @@
     </headerTemp>
 </template>
 <script>
+    import {orderList} from "../../service/cardService.js";
+
     export default {
         data: {
             query: {
@@ -78,10 +78,60 @@
                 state: ""
             },
             tableData: {
-                count: 200,
-                showIndex: 1,
-                datas: ["1","2","3"]
+                query: {
+                    startTime: "",
+                    endTime: "",
+                    state: ""
+                },
+                pageCount: 0,
+                pageNum: 15,
+                pageIndex: 1,
+                datas: []
             }
+        },
+        init() {
+            this.$update({
+                query: {
+                    startTime: "",
+                    endTime: "",
+                    state: ""
+                },
+                tableData: {
+                    query: {
+                        startTime: "",
+                        endTime: "",
+                        state: ""
+                    },
+                    pageCount: 0,
+                    pageNum: 15,
+                    pageIndex: 1,
+                    datas: []
+                }
+            });
+            this.$watch("tableData.pageIndex", function(nVal, oVal) {
+                this.getList();
+            });
+        },
+        queryList() {
+            this.data.tableData.query.startTime = this.data.query.startTime;
+            this.data.tableData.query.endTime = this.data.query.endTime;
+            this.data.tableData.query.state = this.data.query.state;
+            this.data.tableData.pageIndex = 1;
+            this.$update();
+            this.getList();
+        },
+        getList() {
+            var self = this;
+            orderList({
+                startTime: self.data.tableData.query.startTime,
+                endTime: self.data.tableData.query.endTime,
+                state: self.data.tableData.query.state,
+                pageIndex: self.data.tableData.pageIndex,
+                pageNum: self.data.tableData.pageNum
+            }, (data)=>{
+                self.data.tableData.pageCount = data.dataCount;
+                self.$update("tableData.datas", data.list);
+            });
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl"),

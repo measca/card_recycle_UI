@@ -244,6 +244,22 @@ rule["min"] = {
   }
 };
 
+rule["eqmin"] = {
+  message: '必须小于等于{{value}}',
+  action: function (value, attrValue , next) {
+    var num = attrValue;
+    next(parseFloat(value) <= num);
+  }
+};
+
+rule["eqmax"] = {
+  message: '必须大于等于{{value}}',
+  action: function (value, attrValue , next) {
+    var num = attrValue;
+    next(parseFloat(value) >= num);
+  }
+};
+
 rule["eq"] = {
   message: '必须等于{{value}}',
   action: function (value, attrValue , next) {

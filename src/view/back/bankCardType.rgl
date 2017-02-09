@@ -5,10 +5,10 @@
                 <a class="btn btn-primary pull-right ml5" on-click={this.showAddModal()}>添加卡行</a>
                 卡行管理
             </h3>
-            <div class="box">
+            <div class="box" r-hide={bankList.length > 0}>
                 <div class="nodata"><i class="iconfont fa fa-search"></i><br>抱歉，没有找到任何相关的数据！</div>
             </div>
-            <table class="table trade-records">
+            <table class="table trade-records" r-hide={bankList.length <= 0}>
                 <thead>
                     <tr>
                         <th>卡行名称</th>
@@ -16,27 +16,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {#list bankList as bank}
                     <tr>
-                        <td>-</td>
+                        <td>{bank.name}</td>
                         <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
+                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal(bank)}><i class="fa fa-pencil"></i></a>
+                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del(bank.id)}><i class="fa fa-times-circle"></i></a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>-</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-info-alt btn-xs" r-tooltip="编辑" on-click={this.showEdidModal()}><i class="fa fa-pencil"></i></a>
-                            <a href="javascript:;" class="btn btn-default-alt btn-xs ml10" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>
-                        </td>
-                    </tr>
+                    {/list}
                 </tbody>
             </table>
         </div>
@@ -46,9 +34,11 @@
 </template>
 <script>
     import confirm from "../../tool/confirm/index.js";
+    import {getBankList, delBankList} from "../../service/bankCardService.js";
 
     export default {
         data: {
+            bankList: []
         },
         components: {
             addModal: require("./modal/bankCardType/add.rgl"),
@@ -57,14 +47,34 @@
         showAddModal() {
             this.$refs.addModal.show();
         },
-        showEdidModal() {
-            this.$refs.edidModal.show();
+        showEdidModal(bank) {
+            this.$refs.edidModal.show(bank);
         },
-        del() {
+        del(id) {
+            var self = this;
             confirm.ajax("确定删除？", ()=>{
-                setTimeout(function() {
+                delBankList({
+                    id: id
+                },()=>{
+                    self.initList();
                     confirm.alert("删除成功");
-                }, 3000);
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        init() {
+            this.$update("bankList", []);
+            this.initList();
+            var self = this;
+            this.$refs.addModal.success = this.$refs.edidModal.success = ()=>{
+                self.initList();
+            };
+        },
+        initList() {
+            var self = this;
+            getBankList((datas)=>{
+                self.$update("bankList", datas);
             });
         }
     }
