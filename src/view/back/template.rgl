@@ -2,7 +2,7 @@
 	<div class="wrapper">
 		<div class="nav-box">
 			<div class="nav-header">
-				<img src="../../resource/front/logo_transparent.png" alt="logo" class="logo">
+				<img src="{logoURL}" alt="logo" class="logo">
 			</div>
 			<ul class="nav-body">
                 {#list menu as item}
@@ -90,6 +90,7 @@
 	import "./scss/template.scss";
     import {editPwd} from "../../service/adminUserService.js";
     import gritter from "../../tool/gritter/gritter.js";
+    import config from "web.config";
 
     var menus = [{
         id: 0,
@@ -197,6 +198,7 @@
             this.$update("userName", getWebSpUserName());
         },
 		data: {
+            logoURL: config.logoURL,
             userName: getWebSpUserName(),
             menus: menus,
             menu: menus[0].child,

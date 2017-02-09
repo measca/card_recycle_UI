@@ -2,7 +2,7 @@
   <div class="login-box">
     <div class="login-bg"></div>
     <div class="login-margin-top">
-      <img src="../../resource/front/logo_transparent.png" class="mt50">
+      <img src="{logoURL}" class="mt50">
       <div class="login-body" ref="body">
         <div class="login-body-bg"></div>
         <form class="login-form" onsubmit="return false">
@@ -38,6 +38,7 @@
     },
     data: {
       webName: config.webName,
+      logoURL: config.logoURL,
       user: {
         username: "",
         password: ""
