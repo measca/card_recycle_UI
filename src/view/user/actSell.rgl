@@ -182,7 +182,7 @@
                 datas = datas || [];
                 var moneys = [];
                 for(var i = 0, d; d = datas[i++];) {
-                    var m = parseFloat(d.supportAmount) * (parseFloat(card.saleRatio) * 0.01).toFixed(2);
+                    var m = parseFloat(d.supportAmount) * parseFloat(card.saleRatio).toFixed(2);
                     moneys.push({
                         id: d.id,
                         money: parseFloat(d.supportAmount),

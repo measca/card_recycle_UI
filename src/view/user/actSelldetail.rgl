@@ -47,7 +47,7 @@
                             <td>{#if d.orderStatus == 0}处理中{/if}{#if d.orderStatus == 1}处理成功{/if}{#if d.orderStatus == 2}处理失败{/if}</td>
                             <td>{d.actualAmount}</td>
                             <td>{d.processTime}</td>
-                            <td>{d.saleRatio}%</td>
+                            <td>{d.saleRatio * 100}%</td>
                             <td>{d.completeTime}</td>
                         </tr>
                         {/list}
