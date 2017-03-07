@@ -79,3 +79,16 @@ window.removeSpUserNameAndSpUKey = ()=>{
     cookie.remove("spUserName");
     cookie.remove("spUKey");
 }
+
+var browser=navigator.appName 
+var b_version=navigator.appVersion 
+var version=b_version.split(";"); 
+var trim_Version=version[1].replace(/[ ]/g,""); 
+if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE6.0") 
+{ 
+} 
+else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE7.0") 
+{ 
+} else {
+    $("#browser_ie").remove();
+}

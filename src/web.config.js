@@ -1,5 +1,5 @@
 window["web.config"] = {
-    serverUrl: "",
+    serverUrl: "http://192.168.1.8:8080",
     webName: "TEST",
     beianMsg: "我是备案号",
     kefuTek: "00-0000-000",

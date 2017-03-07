@@ -31,10 +31,10 @@
                             </div>
                             <div class="form-group">
                                 <div class="mr">
-                                    <label class="control-label" for="verifycode"><i class="fa fa-shield"></i></label>
-                                    <input type="text" class="form-control" name="verifycode" maxlength="4" placeholder="验证码" r-model="verifycode | trim" autocomplete="off">
-                                    <img src="{vCodeImgURL}" class="verifyimg code" onclick="src=src+'?a=' + Math.random()" tip="点击图片刷新验证码">
-                                    <div r-hide={$validation.verifycode.isPass} class="text-red pt5">{$validation.verifycode.msg}</div>
+                                    <label class="control-label"><i class="fa fa-shield"></i></label>
+                                    <input type="text" class="form-control" maxlength="4" placeholder="验证码" r-model="code">
+                                    <img ref="codeImg" class="verifyimg code" onclick="src=src+'?a=' + Math.random()" tip="点击图片刷新验证码">
+                                    <div r-hide={$validation.code.isPass} class="text-red pt5">{$validation.code.msg}</div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -86,19 +86,18 @@
             this.$update({
                 username: "",
                 password: "",
-                verifycode: ""
+                code: ""
             });
-            this.$update("vCodeImgURL", config.serverUrl + "/user/getVCode" + '?a=' + Math.random());
+            $(this.$refs.codeImg).prop("src", config.serverUrl + "/user/getVCode" + '?a=' + Math.random());
         },
         data: {
             username: "",
             password: "",
-            verifycode: "",
+            code: "",
             timeNum: 3,
             timeObj: -1,
             isSuccess: false, // 是否登录成功
             isSend: false,
-            vCodeImgURL: "",
             signImg: config.signImg
         },
         components: {
@@ -122,10 +121,11 @@
         login() {
             var self = this;
             this.$update("isSend", true);
+            console.log(this.data);
             signin({
                 username: this.data.username,
                 password: this.data.password,
-                verifycode: this.data.verifycode
+                verifycode: this.data.code
             }, (data)=>{
                 setWebUserName(data.username);
                 setWebUKey(data.token);
@@ -159,7 +159,7 @@
                     alphaDash: true,
                     minlength: 7,
                 },
-                verifycode: {
+                code: {
                     required: true,
                     alphaDash: true,
                     minlength: 4,

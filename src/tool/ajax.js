@@ -21,10 +21,11 @@ function send (option, ajax, resolve) {
     contentType: option.contentType,
     crossDomain: option.crossDomain,
     data: option.data,
-    dataType: option.dataType,
+    dataType: "jsonp",
+    jsonp: 'callback',
     headers: option.headers,
     processData: option.processData,
-    type: option.type,
+    type: "get",
     url: option.url,
     global: false,
     xhrFields: {

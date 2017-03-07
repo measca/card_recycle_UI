@@ -13,8 +13,7 @@ export default function(url, data, successCallback, errorCallback, callback) {
     if($.isFunction(url.toSendModel)) {
         data = url.toSendModel(data);
     }
-    getAjax().create(url, data, "text").success(function(dataVal){
-        var data = JSON.parse(dataVal);
+    getAjax().create(url, data, "text").success(function(data){
         if(data.code == 200) {
             if($.isFunction(url.toBackModel)) {
                 data.data = url.toBackModel(data.data);

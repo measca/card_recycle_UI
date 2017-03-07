@@ -124,6 +124,16 @@
         init() {
             var self = this;
             this.$update({
+                cards: [],
+                moneys: [],
+                sendData: {
+                    isAgree: false,
+                    cardId: null,
+                    money: null,
+                    cardDatas: []
+                },
+                isSuccess: false,
+                isSub: false,
                 isSend: false
             });
             getAll((datas)=>{
