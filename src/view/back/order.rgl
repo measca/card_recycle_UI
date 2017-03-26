@@ -164,9 +164,9 @@
         exportData() {
             var par = "token=" + getWebSpUKey() + "&condition=";
             if(this.data.exportQuery.from && this.data.exportQuery.to) {
-                par += JSON.stringify(this.data.exportQuery);
+                par += encodeURI(JSON.stringify(this.data.exportQuery));
             } else {
-                par += "{}";
+                par += encodeURI("{}");
             }
             window.open(config.serverUrl + "/admin/order/export?" + par);
         }

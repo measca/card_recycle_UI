@@ -154,6 +154,7 @@
         },
         exportData() {
             var par = "token=" + getWebSpUKey();
+            console.log(config.serverUrl + "/admin/business/export?" + par);
             window.open(config.serverUrl + "/admin/business/export?" + par);
         }
     }
