@@ -40,8 +40,7 @@
                     <div class="col-xs-2 col-xs-offset-2">
                         <label class="control-label">收款姓名：</label>
                     </div>
-                    <div class="col-xs-6"><input type="text" class="form-control" maxlength="5"  r-model="editModel.accountName"></div>
-                    <div r-hide={$validation.accountName.isPass} class="col-xs-offset-4 col-xs-6 text-red pt5">{$validation.accountName.msg}</div>
+                    <div class="col-xs-6">{editModel.accountName}</div>
                     <div class="clear"></div>
                 </div>
                 <div class="form-group">

@@ -15,9 +15,8 @@
                                     <label class="control-label" for="oldpsw">收款姓名：</label>
                                 </div>
                                 <div class="col-xs-4">
-                                    <input class="form-control" type="text" r-model="name" maxlength="5">
+                                    {name}
                                 </div>
-                                <div r-hide={$validation.name.isPass} class="col-xs-4 text-red pt5 pl10">{$validation.name.msg}</div>
                                 <div class="clear"></div>
                             </div>
                             <div class="form-group">
@@ -88,6 +87,8 @@
     export default {
         init() {
             var self = this;
+            self.data.name = getWebName();
+            self.$update();
             isTrueNameVerified(()=>{
                 self.$update({
                     isTrueNameVerified: true,
@@ -106,8 +107,8 @@
             bankList: [],
             bankId: "",
             account: "",
-            name: '',
-            isSub: false
+            isSub: false,
+            name: ""
         },
         components: {
             "headerTemp": require("../../component/userTemplate/user.rgl")
@@ -122,14 +123,13 @@
             }
             add({
                 bankName: bankName,
-                name: this.data.name,
+                name: getWebName(),
                 bankId: this.data.bankId,
                 account: this.data.account
             }, ()=>{
                 self.$update({
                     isSub: true,
                     bankId: "",
-                    name: "",
                     account: ""
                 });
             }, (msg)=>{
@@ -145,10 +145,6 @@
                     required: true,
                     alphaDash: true,
                     minlength: 7
-                },
-                name: {
-                    required: true,
-                    chs: true
                 }
             }
         }

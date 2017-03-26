@@ -205,6 +205,22 @@
       }
     },
     config(data) {
+      data.__StartDate = {
+        date: new Date(),
+        showVal: "",
+        selectDate: null,
+        showLeftBtn: true,
+        showRightBtn: true,
+        days: []
+      };
+      data.__EndDate = {
+        date: new Date(),
+        showVal: "",
+        selectDate: null,
+        showLeftBtn: true,
+        showRightBtn: true,
+        days: []
+      };
       if(data.start) {
         data.__StartDate.date = data.__StartDate.selectDate = toDate(data.start);
       }

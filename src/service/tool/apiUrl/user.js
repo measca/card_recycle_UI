@@ -27,6 +27,22 @@ export default function(url) {
         telChange: {
             url: url + "/user/tel/change",
             type: "POST"
+        },
+        lock: {
+            url: url + "/user/admin/lock",
+            type: "POST"
+        },
+        enable: {
+            url: url + "/user/admin/enable",
+            type: "POST"
+        },
+        isTelExists: {
+            url: url + "/user/isTelExists",
+            type: "POST"
+        },
+        isAccExists: {
+            url: url + "/user/isAccExists",
+            type: "POST"
         }
     };
 }

@@ -35,7 +35,8 @@ export function signin(data, successCallback, errorCallback) {
             token: res.token,
             uid: res.id,
             tel: res.tel,
-            lastLoginTime: res.lastLoginTime
+            lastLoginTime: res.lastLoginTime,
+            name: res.name
         })
     }, function(msg){
         if($.isFunction(errorCallback)) errorCallback(msg);
@@ -179,5 +180,47 @@ export function logout(token) {
         exitinfo: JSON.stringify({
             token: token
         })
+    });
+}
+
+export function lock(id, successCallback, errorCallback) {
+    getAjax(user.lock, {
+        id: id,
+        token: getWebSpUKey()
+    }, function() {
+        successCallback()
+    }, function(msg){
+        if($.isFunction(errorCallback)) errorCallback(msg);
+    });
+}
+
+export function enable(id, successCallback, errorCallback) {
+    getAjax(user.enable, {
+        id: id,
+        token: getWebSpUKey()
+    }, function() {
+        successCallback()
+    }, function(msg){
+        if($.isFunction(errorCallback)) errorCallback(msg);
+    });
+}
+
+export function isTelExists(tel, successCallback, errorCallback) {
+    getAjax(user.isTelExists, {
+        tel: tel
+    }, function() {
+        successCallback()
+    }, function(msg){
+        if($.isFunction(errorCallback)) errorCallback(msg);
+    });
+}
+
+export function isAccExists(acc, successCallback, errorCallback) {
+    getAjax(user.isAccExists, {
+        acc: acc
+    }, function() {
+        successCallback()
+    }, function(msg){
+        if($.isFunction(errorCallback)) errorCallback(msg);
     });
 }

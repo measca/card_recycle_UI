@@ -12,13 +12,19 @@
                         <option value="2">处理失败</option>
                     </select>
                     <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">订单状态：</span>
-                    <dateRange style="width: 180px; float: right;" start={query.startTime} end={query.endTime}></dateRange>
+                    <dateRange style="width: 180px; float: right;" start={query.startTime} end={query.endTime} zIndex="3"></dateRange>
                     <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">时间段：</span>
                     <input class="form-control pull-right" style="width: 150px;" r-model="query.cardAccount" maxlength="50">
                     <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">充值卡号：</span>
                     <input class="form-control pull-right" style="width: 150px;" r-model="query.orderVal" maxlength="50">
                     <span class="pull-right pr5" style="font-size: 13px; padding-top: 8px">订单号：</span>
                     <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+                <div class="pull-right" style="width: 1120px;margin-top: 10px;">
+                    <a class="btn btn-primary pull-right ml5" on-click={this.exportData()}>导出</a>
+                    <dateRange style="width: 390px; float: right;" start={exportQuery.from} end={exportQuery.to}></dateRange>
+                    <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">时间段：</span>
                 </div>
                 <div class="clear"></div>
             </h3>
@@ -60,7 +66,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="10">
+                        <td colspan="11">
                             <div class="pull-right">
                                 <page totalItems={tableData.pageCount} perPages={tableData.pageNum} currentPage={tableData.pageIndex}></page>
                             </div>
@@ -74,6 +80,8 @@
 </template>
 <script>
     import {orderListAtAdmin} from "../../service/cardService.js";
+    import config from "web.config";
+    import JSON from "../../tool/JSON";
 
     export default {
         data: {
@@ -84,6 +92,10 @@
                 endTime: '',
                 cardAccount: "",
                 orderVal: "",
+            },
+            exportQuery: {
+                from: '',
+                to: '',
             },
             tableData: {
                 query: {},
@@ -148,6 +160,15 @@
         components: {
             page: require("../../control/page/index.rgl"),
             dateRange: require("../../control/date/dateRange.rgl")
+        },
+        exportData() {
+            var par = "token=" + getWebSpUKey() + "&condition=";
+            if(this.data.exportQuery.from && this.data.exportQuery.to) {
+                par += JSON.stringify(this.data.exportQuery);
+            } else {
+                par += "{}";
+            }
+            window.open(config.serverUrl + "/admin/order/export?" + par);
         }
     }
 </script>

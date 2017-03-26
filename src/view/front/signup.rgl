@@ -13,7 +13,7 @@
                         <form onsubmit="return false;">
                             <div class="form-group">
                                 <label class="control-label"><span class="text-red">*</span> 用户名(E-mail)：</label>
-                                <input type="text" class="form-control" maxlength="30" r-model="user.eMail | trim">
+                                <input type="text" class="form-control" maxlength="30" r-model="user.eMail | trim" on-blur={this.isAccExists()} >
                                 <div class="text-red" r-hide={$validation.eMail.isPass}>{$validation.eMail.msg}</div>
                             </div>
                             <div class="form-group">
@@ -28,7 +28,7 @@
                             </div>
                             <div class="form-group hide">
                                 <label class="control-label"><span class="text-red">*</span> 手机：</label>
-                                <input type="text" class="form-control" maxlength="11" r-model="user.phone | trim" />
+                                <input type="text" class="form-control" maxlength="11" r-model="user.phone | trim" on-blur={this.isTelExists()} />
                                 <div class="text-red" r-hide={$validation.phone.isPass}>{$validation.phone.msg}</div>
                             </div>
                             <div class="form-group hide">
@@ -85,7 +85,7 @@
     </frontTemp>
 </template>
 <script>
-    import {signup} from "../../service/userService.js";
+    import {signup, isTelExists, isAccExists} from "../../service/userService.js";
     import {sendPhoneCode} from "../../service/otherService.js";
     import gritter from "../../tool/gritter/gritter.js";
     import config from "web.config";
@@ -179,6 +179,22 @@
         },
         canLeave(){
             clearInterval(this.data.timeObj);
+        },
+        isTelExists() {
+            var self = this;
+            isTelExists(this.data.user.phone, ()=>{},(msg)=>{
+                self.data.$validation.phone.isPass = self.data.$validation.$isPass = false;
+                self.data.$validation.phone.msg = msg;
+                self.$update();
+            });
+        },
+        isAccExists() {
+            var self = this;
+            isAccExists(this.data.user.eMail, ()=>{},(msg)=>{
+                self.data.$validation.eMail.isPass = self.data.$validation.$isPass = false;
+                self.data.$validation.eMail.msg = msg;
+                self.$update();
+            });
         },
         validation: {
             baseAttrName: "user",

@@ -50,6 +50,12 @@ window.getWebLastLoginTime = ()=>{
 window.setWebLastLoginTime = (val)=>{
     cookie.set("uLastLoginTime", val);
 }
+window.getWebName = ()=>{
+    return cookie.get("uName");
+}
+window.setWebName = (val)=>{
+    cookie.set("uName", val);
+}
 window.removeUserNameAndUKey = ()=>{
     logout(getWebUKey());
     cookie.remove("userName");

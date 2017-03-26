@@ -132,6 +132,8 @@
                 setWebUId(data.uid);
                 setWebTel(data.tel);
                 setWebLastLoginTime(data.lastLoginTime);
+                setWebName(data.name);
+                console.log(data);
                 self.$update({
                     timeNum: 3,
                     isSuccess: true

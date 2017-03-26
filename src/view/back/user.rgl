@@ -3,6 +3,7 @@
         <div class="view-framework-main">
             <h3 class="clearfix">
                 商户管理
+                <a class="btn btn-primary pull-right ml5" on-click={this.exportData()}>导出</a>
                 <a class="btn btn-primary pull-right ml5" on-click={this.queryList()}>查询</a>
                 <input class="form-control pull-right" style="width: 150px;" r-model="query.account">
                 <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">帐号：</span>
@@ -19,7 +20,7 @@
                         <th>QQ</th>
                         <th>姓名</th>
                         <th>身份证</th>
-                        <!--<th style="width: 120px">操作</th>-->
+                        <th style="width: 120px">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,12 +32,14 @@
                         <td>{d.qq}</td>
                         <td>{d.name}</td>
                         <td>{d.idCardNum}</td>
-                        <!--<td>-->
+                        <td>
                             <!--<a href="javascript:;" class="btn btn-success-alt btn-xs" r-tooltip="银行卡明细" on-click={editModalShowState = true}><i class="fa fa-credit-card"></i></a>-->
                             <!--<a href="javascript:;" class="btn btn-info-alt btn-xs ml5" r-tooltip="订单记录明细" on-click={this.showAddModal()}><i class="fa fa-bars"></i></a>-->
                             <!--<a href="javascript:;" class="btn btn-primary-alt btn-xs ml5" r-tooltip="提款记录明细" style="padding-left: 4px;padding-right: 4px;"><i class="fa fa-rmb"></i></a>-->
                             <!--<a href="javascript:;" class="btn btn-default-alt btn-xs ml5" r-tooltip="删除" on-click={this.del()}><i class="fa fa-times-circle"></i></a>-->
-                        <!--</td>-->
+                            <a r-hide={d.status == 0} href="javascript:;" class="btn btn-default-alt btn-xs ml5" r-tooltip="冻结" on-click={this.lock(d.id, d, d_index)}><i class="fa fa-lock"></i></a>
+                            <a r-hide={d.status == 1} href="javascript:;" class="btn btn-default-alt btn-xs ml5" r-tooltip="解冻" on-click={this.enable(d.id, d, d_index)}><i class="fa fa-unlock"></i></a>
+                        </td>
                     </tr>
                     {/list}
                 </tbody>
@@ -58,6 +61,8 @@
 <script>
     import confirm from "../../tool/confirm/index.js";
     import {query} from "../../service/adminBusinessService.js";
+    import {lock, enable} from "../../service/userService.js";
+    import config from "web.config";
 
     export default {
         data: {
@@ -124,6 +129,32 @@
                     confirm.alert("删除成功");
                 }, 3000);
             });
+        },
+        lock(id, user) {
+            var self = this;
+            confirm.ajax("确定要冻结该用户？", ()=>{
+                lock(id, ()=>{
+                    self.getList();
+                    confirm.alert("冻结成功");
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        enable(id, user) {
+            var self = this;
+            confirm.ajax("确定要解冻该用户？", ()=>{
+                enable(id, ()=>{
+                    self.getList();
+                    confirm.alert("解冻成功");
+                }, (msg)=>{
+                    confirm.alert(msg);
+                });
+            });
+        },
+        exportData() {
+            var par = "token=" + getWebSpUKey();
+            window.open(config.serverUrl + "/admin/business/export?" + par);
         }
     }
 </script>
