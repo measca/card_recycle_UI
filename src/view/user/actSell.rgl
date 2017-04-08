@@ -44,6 +44,12 @@
                             </div>
                             <hr>
                             <div class="form-group">
+                                <div class="col-xs-1 pt5"></div>
+                                <div class="col-xs-6" style="color: red;">{description}</div>
+                                <div class="clear"></div>
+                            </div>
+                            <hr>
+                            <div class="form-group">
                                 <div class="col-xs-1 pt5"><label class="control-label">选择数量：</label></div>
                                 <div class="col-xs-11">
                                     <span class="text-muted">{sendData.cardDatas.length}张</span>
@@ -111,6 +117,7 @@
         data: {
             cards: [],
             moneys: [],
+            description: "",
             sendData: {
                 isAgree: false,
                 cardId: null,
@@ -185,17 +192,18 @@
             this.data.sendData.cardId = card.id;
             this.data.sendData.money = null;
             this.$update({
-                moneys: []
+                moneys: [],
+                description: card.description
             });
             var self = this;
             getItemAll({id: card.id}, (datas)=>{
                 datas = datas || [];
                 var moneys = [];
                 for(var i = 0, d; d = datas[i++];) {
-                    var m = parseFloat(d.supportAmount) * parseFloat(card.saleRatio).toFixed(2);
+                    var m = (parseFloat(d.supportAmount) * parseFloat(card.saleRatio).toFixed(2)).toFixed(2);
                     moneys.push({
                         id: d.id,
-                        money: parseFloat(d.supportAmount),
+                        money: parseFloat(d.supportAmount).toFixed(2),
                         meritMoney: m
                     });
                 }
