@@ -42,7 +42,7 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-5 col-xs-offset-3">
-                    <input type="submit" class="btn btn-primary btn-block" value="提交" on-click={this.editData()} {#if !$validation.$isPass}disabled{/if}>
+                    <input type="submit" class="btn btn-danger btn-block" value="提交" on-click={this.editData()} {#if !$validation.$isPass}disabled{/if}>
                 </div>
                 <div class="clear"></div>
             </div>

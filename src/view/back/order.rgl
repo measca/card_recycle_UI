@@ -4,7 +4,7 @@
             <h3 class="clearfix">
                 订单管理
                 <div class="pull-right" style="width: 1120px;">
-                    <a class="btn btn-primary pull-right ml5" on-click={this.queryList()}>查询</a>
+                    <a class="btn btn-danger pull-right ml5" on-click={this.queryList()}>查询</a>
                     <select class="form-control pull-right" style="width: 130px" r-model="query.state">
                         <option value="">全部记录</option>
                         <option value="0">处理中</option>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="clear"></div>
                 <div class="pull-right" style="width: 1120px;margin-top: 10px;">
-                    <a class="btn btn-primary pull-right ml5" on-click={this.exportData()}>导出</a>
+                    <a class="btn btn-danger pull-right ml5" on-click={this.exportData()}>导出</a>
                     <dateRange style="width: 390px; float: right;" start={exportQuery.from} end={exportQuery.to}></dateRange>
                     <span class="pull-right pr5 pl10" style="font-size: 13px; padding-top: 8px">时间段：</span>
                 </div>

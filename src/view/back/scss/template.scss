@@ -145,7 +145,7 @@
 
 .nav-box {
   z-index: 2;
-  background: #1c2b36;
+  background: #af0808;
   width: 220px;
   height: 100%;
   position: absolute;
@@ -156,7 +156,6 @@
 
   .nav-header {
     padding: 30px 0 30px 0;
-    border-bottom: 1px solid #131e26;
 
     .logo {
       width: 135px;
@@ -176,32 +175,32 @@
       display: block;
       border-left-style: solid;
       border-left-width: 4px;
-      border-left-color: #1c2b36;
+      border-left-color: #af0808;
 
       &:hover, &:focus {
-        background: #131e26;
-        border-left-color: #131e26;
+        background: #5f0f21;
+        border-left-color: #ef9dc3;
         color: white;
       }
 
       &.nav-title {
         margin-top: 15px;
         margin-bottom: 10px;
-        color: #5c798f;
-        font-size: 12px;
+        color: #f6f8f9;
+        font-size: 15px;
         margin-left: 15px;
         cursor: default;
 
         &:hover, &:focus {
           background: none;
-          color: #5c798f;
-          border-left-color: #1c2b36;
+          color: #f6f8f9;
+          border-left-color: #af0808;
         }
       }
 
       &.active {
-        background: #131e26;
-        border-left-color: #19a9d5;
+        background: #5f0f21;
+        border-left-color: #ef9dc3;
 
         > ul {
           display: block;
@@ -209,7 +208,7 @@
         }
 
         > a {
-          color: #fff;
+          color: #f6f8f9;
 
           span {
             &:before {
@@ -222,7 +221,7 @@
       > ul { display: none;}
       > a {
         display: block;
-        color: #869fb1;
+        color: #f6f8f9;
         font-weight: 600;
         padding: 14px 20px 14px 25px;
         position: relative;

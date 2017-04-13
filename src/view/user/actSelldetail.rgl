@@ -4,7 +4,7 @@
             <div class="view-framework-main">
                 <h3 class="clearfix">
                     <a class="btn btn-default pull-right ml5" href="#/user/actSell">我要寄售</a>
-                    <a class="btn btn-primary pull-right ml5" on-click={this.queryList()}>查询</a>
+                    <a class="btn btn-danger pull-right ml5" on-click={this.queryList()}>查询</a>
                     <select class="form-control pull-right" style="width: 130px" r-model="query.state">
                         <option value="">全部记录</option>
                         <option value="0">处理中</option>

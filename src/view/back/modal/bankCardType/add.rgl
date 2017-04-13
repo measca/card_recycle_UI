@@ -13,7 +13,7 @@
             </div>
             <div class="form-group">
                 <div class="col-xs-5 col-xs-offset-4">
-                    <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.send()}>
+                    <input type="submit" class="btn btn-danger btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.send()}>
                 </div>
                 <div class="clear"></div>
             </div>

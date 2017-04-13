@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="view-framework-main">
             <h3 class="clearfix">
-                <a class="btn btn-primary pull-right ml5" on-click={this.sendEdit()}>添加问题</a>
+                <a class="btn btn-danger pull-right ml5" on-click={this.sendEdit()}>添加问题</a>
                 常见问题
             </h3>
             <div class="box">

@@ -20,7 +20,7 @@
                             <div class="col-xs-3">
                                 <div class="assets-actions pt15">
                                     <p>
-                                        <a href="#/user/tx" class="btn btn-primary btn-sm mr30">提现</a>
+                                        <a href="#/user/tx" class="btn btn-danger btn-sm mr30">提现</a>
                                         <a href="#/user/actCashrecords">提现记录</a>
                                     </p>
                                 </div>

@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary btn-block" type="submit" {#if !$validation.$isPass || isSend}disabled{/if}>
+                                <button class="btn btn-danger btn-block" type="submit" {#if !$validation.$isPass || isSend}disabled{/if}>
                                     {isSend ? "正在登陆..." : "登 录"}
                                 </button>
                             </div>

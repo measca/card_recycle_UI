@@ -9,7 +9,7 @@
                     <input type="text" class="form-control" maxlength="20" r-model="money">
                 </div>
                 <div class="col-xs-1 pl20">
-                    <input type="submit" class="btn btn-primary btn-block" value="添加" on-click={this.addMoneyData()} {#if !this.isNum(this.data.money)}disabled{/if}>
+                    <input type="submit" class="btn btn-danger btn-block" value="添加" on-click={this.addMoneyData()} {#if !this.isNum(this.data.money)}disabled{/if}>
                 </div>
                 <div class="text-red col-xs-offset-3 col-xs-5" r-hide={$validation.name.isPass}>{$validation.name.msg}</div>
                 <div class="clear"></div>

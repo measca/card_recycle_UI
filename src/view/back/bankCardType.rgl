@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="view-framework-main">
             <h3 class="clearfix">
-                <a class="btn btn-primary pull-right ml5" on-click={this.showAddModal()}>添加卡行</a>
+                <a class="btn btn-danger pull-right ml5" on-click={this.showAddModal()}>添加卡行</a>
                 卡行管理
             </h3>
             <div class="box" r-hide={bankList.length > 0}>

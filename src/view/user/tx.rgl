@@ -65,7 +65,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-4 col-xs-offset-2">
-                                    <input class="btn btn-primary btn-block" type="submit" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.sendData()}>
+                                    <input class="btn btn-danger btn-block" type="submit" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.sendData()}>
                                 </div>
                                 <div class="clear"></div>
                             </div>

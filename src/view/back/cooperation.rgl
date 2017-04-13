@@ -3,7 +3,7 @@
         <div class="view-framework-main">
             <h3 class="clearfix">
                 商家合作
-                <a class="btn btn-primary pull-right ml5" on-click={this.sendEdit()}>保存更改</a>
+                <a class="btn btn-danger pull-right ml5" on-click={this.sendEdit()}>保存更改</a>
             </h3>
             <div class="box">
                 <FCKEditor value={context}></FCKEditor>

@@ -122,9 +122,9 @@ h4,.h4{
 
         .iconlink {
             color: #fff;
-            background-color: #0f7f89;
+            background-color: #890f0f;
 
-            &:hover{ color: #0a89b4; background-color: #fff; }
+            &:hover{ color: #890f0f; background-color: #fff; }
         }
 
         .userlink a {
@@ -133,7 +133,7 @@ h4,.h4{
         }
 
         .userlink .sep {
-            color: #25a9d6;
+            color: #a22747;
             padding: 0 10px;
             font-size: 90%;
             font-family: simsun;
@@ -880,7 +880,7 @@ h4,.h4{
         bottom: 0;
         left: 0;
         width: 180px;
-        background-color: #293038;
+        background-color: #e1484c;
         z-index: 5;
         overflow-y: auto;
         overflow-x: hidden;
@@ -906,13 +906,13 @@ h4,.h4{
 
 .sidebar-title, .sidebar-trans a {
     display: block;
-    color: #535a60;
+    color: #fff;
     height: 45px;
     line-height: 45px;
     padding: 0 0 0 50px;
     overflow: hidden;
     position: relative;
-    background-color: #22282e;
+    background-color: #d53e3e;
 }
 
 .sidebar-nav .iconfont {
@@ -925,16 +925,16 @@ h4,.h4{
 }
 
 .sidebar-trans a {
-    color: #aeb9c2;
+    color: #fff;
     background-color: transparent;
 }
 
-.sidebar-trans a{ color: #aeb9c2; background-color: transparent;}
-.sidebar-trans a:hover{text-decoration: none; color: #fff; background-color: #37424f;}
+.sidebar-trans a{ color: #fff; background-color: transparent;}
+.sidebar-trans a:hover{text-decoration: none; color: #fff; background-color: #ee849c;}
 .sidebar-trans .current a,
 .sidebar-trans .current a:hover{ 
     color: #fff; 
-    background-color: #37ade2;
+    background-color: #ee849c;
 }
 
 .box-list {

@@ -10,7 +10,7 @@
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <label class="pull-left control-label text-right pt5" style="width: 132px;">手续费设置（<i class="fa fa-rmb"></i>）：</label>
-                                <a class="btn btn-primary mb10">添加</a>
+                                <a class="btn btn-danger mb10">添加</a>
                                 <div class="clear mb10"></div>
                                 <div class="pull-left text-right pt5" style="width: 132px;">金额：</div>
                                 <div class="pull-left" style="width: 300px">
@@ -70,7 +70,7 @@
                         </div>
                         <div class="form-group">
                             <div class="col-xs-3">
-                                <input type="submit" class="btn btn-primary btn-block" name="newpass" value="提交" style="width: 300px; margin-left: 132px;">
+                                <input type="submit" class="btn btn-danger btn-block" name="newpass" value="提交" style="width: 300px; margin-left: 132px;">
                             </div>
                             <div class="clear"></div>
                         </div>

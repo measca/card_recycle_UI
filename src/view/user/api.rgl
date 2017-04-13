@@ -47,7 +47,7 @@
                             </div>
                             <div class="col-xs-6">
                                 {#if isShowSecretKey}<span class="pt5">{secretKey}</span>{/if}
-                                {#if !isShowSecretKey}<a class="btn btn-primary btn-block" style="width: 80px" on-click={isShowSecretKey = true}>点击查看</a>{/if}
+                                {#if !isShowSecretKey}<a class="btn btn-danger btn-block" style="width: 80px" on-click={isShowSecretKey = true}>点击查看</a>{/if}
                             </div>
                             <div class="clear"></div>
                         </div>

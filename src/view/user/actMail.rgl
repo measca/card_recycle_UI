@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group pb30">
                             <div class="col-xs-3 col-xs-offset-3">
-                                <button type="submit" class="btn btn-primary btn-block" {#if !($validation.$isPass && email)}disabled{/if} on-click={this.editEmail()}>
+                                <button type="submit" class="btn btn-danger btn-block" {#if !($validation.$isPass && email)}disabled{/if} on-click={this.editEmail()}>
                                     提交
                                 </button>
                             </div>

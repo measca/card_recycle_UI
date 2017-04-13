@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="view-framework-main">
             <h3 class="clearfix">
-                <a class="btn btn-primary pull-right ml5" on-click={this.show()}>添加管理员</a>
+                <a class="btn btn-danger pull-right ml5" on-click={this.show()}>添加管理员</a>
                 系统用户
             </h3>
             <div class="box" r-hide={userList.length > 0}>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-xs-5 col-xs-offset-4">
-                        <input type="submit" class="btn btn-primary btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.addUser()}>
+                        <input type="submit" class="btn btn-danger btn-block" value="提交" {#if !$validation.$isPass}disabled{/if} on-click={this.addUser()}>
                     </div>
                     <div class="clear"></div>
                 </div>

@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="view-framework-main">
             <h3 class="clearfix">
-                <a class="btn btn-primary pull-right ml5" on-click={this.showAddModal()}>添加充值卡类型</a>
+                <a class="btn btn-danger pull-right ml5" on-click={this.showAddModal()}>添加充值卡类型</a>
                 充值卡类型管理
             </h3>
             <div class="box" r-hide={dataList.length > 0}>
